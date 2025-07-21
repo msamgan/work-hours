@@ -28,6 +28,14 @@ final class Team extends Model
             return (float) $project->user->hourly_rate ?? 0;
         }
 
+        $projectTeam = ProjectTeam::query()
+            ->where('project_id', $project->id)
+            ->where('member_id', $memberId)->first();
+
+        if ($projectTeam) {
+            return (float) $projectTeam->hourly_rate ?? 0;
+        }
+
         $entry = self::query()->where('user_id', $project->user_id)->where('member_id', $memberId)->first();
 
         return $entry ? (float) $entry->hourly_rate : 0;
