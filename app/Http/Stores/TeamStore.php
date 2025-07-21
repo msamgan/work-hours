@@ -28,6 +28,8 @@ final class TeamStore
                 'id' => $team->member->id,
                 'name' => $team->member->name,
                 'email' => $team->member->email,
+                'hourly_rate' => $team->hourly_rate ?? 0,
+                'currency' => $team->currency ?? 'USD',
             ]);
     }
 

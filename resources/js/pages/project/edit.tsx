@@ -18,6 +18,8 @@ type TeamMember = {
     id: number
     name: string
     email: string
+    hourly_rate: number
+    currency: string
 }
 
 type Client = {
@@ -96,11 +98,12 @@ export default function EditProject({ project, teamMembers, assignedTeamMembers,
             // Add member if not already selected
             currentMembers.push(memberId)
 
-            // Add default data for this member
+            // Add default data for this member with values from team table
+            const teamMember = teamMembers.find(m => m.id === memberId);
             currentMembersData.push({
                 id: memberId,
-                hourly_rate: 0,
-                currency: 'USD'
+                hourly_rate: teamMember?.hourly_rate || 0,
+                currency: teamMember?.currency || 'USD'
             })
         } else {
             // Remove member if already selected
@@ -246,64 +249,35 @@ export default function EditProject({ project, teamMembers, assignedTeamMembers,
                                                                 />
                                                                 <Label htmlFor={`member-${member.id}`} className="cursor-pointer text-sm">
                                                                     {member.name} ({member.email})
+                                                                    {data.team_members.includes(member.id) && (
+                                                                        <span className="ml-2">
+                                                                            - Hourly Rate:
+                                                                            <Input
+                                                                                id={`hourly-rate-${member.id}`}
+                                                                                type="number"
+                                                                                min="0"
+                                                                                step="0.01"
+                                                                                value={data.team_members_data.find(m => m.id === member.id)?.hourly_rate || 0}
+                                                                                onChange={(e) => {
+                                                                                    const value = parseFloat(e.target.value);
+                                                                                    const newTeamMembersData = [...data.team_members_data];
+                                                                                    const index = newTeamMembersData.findIndex(m => m.id === member.id);
+                                                                                    if (index !== -1) {
+                                                                                        newTeamMembersData[index] = {
+                                                                                            ...newTeamMembersData[index],
+                                                                                            hourly_rate: value
+                                                                                        };
+                                                                                        setData('team_members_data', newTeamMembersData);
+                                                                                    }
+                                                                                }}
+                                                                                disabled={processing}
+                                                                                className="ml-2 h-8 w-24 text-sm inline-block"
+                                                                            />
+                                                                            <span className="ml-1">{data.team_members_data.find(m => m.id === member.id)?.currency || teamMembers.find(m => m.id === member.id)?.currency || 'USD'}</span>
+                                                                        </span>
+                                                                    )}
                                                                 </Label>
                                                             </div>
-
-                                                            {data.team_members.includes(member.id) && (
-                                                                <div className="ml-6 grid grid-cols-2 gap-2">
-                                                                    <div>
-                                                                        <Label htmlFor={`hourly-rate-${member.id}`} className="text-xs">
-                                                                            Hourly Rate
-                                                                        </Label>
-                                                                        <Input
-                                                                            id={`hourly-rate-${member.id}`}
-                                                                            type="number"
-                                                                            min="0"
-                                                                            step="0.01"
-                                                                            value={data.team_members_data.find(m => m.id === member.id)?.hourly_rate || 0}
-                                                                            onChange={(e) => {
-                                                                                const value = parseFloat(e.target.value);
-                                                                                const newTeamMembersData = [...data.team_members_data];
-                                                                                const index = newTeamMembersData.findIndex(m => m.id === member.id);
-                                                                                if (index !== -1) {
-                                                                                    newTeamMembersData[index] = {
-                                                                                        ...newTeamMembersData[index],
-                                                                                        hourly_rate: value
-                                                                                    };
-                                                                                    setData('team_members_data', newTeamMembersData);
-                                                                                }
-                                                                            }}
-                                                                            disabled={processing}
-                                                                            className="h-8 text-sm"
-                                                                        />
-                                                                    </div>
-                                                                    <div>
-                                                                        <Label htmlFor={`currency-${member.id}`} className="text-xs">
-                                                                            Currency
-                                                                        </Label>
-                                                                        <Input
-                                                                            id={`currency-${member.id}`}
-                                                                            type="text"
-                                                                            maxLength={3}
-                                                                            value={data.team_members_data.find(m => m.id === member.id)?.currency || 'USD'}
-                                                                            onChange={(e) => {
-                                                                                const value = e.target.value.toUpperCase();
-                                                                                const newTeamMembersData = [...data.team_members_data];
-                                                                                const index = newTeamMembersData.findIndex(m => m.id === member.id);
-                                                                                if (index !== -1) {
-                                                                                    newTeamMembersData[index] = {
-                                                                                        ...newTeamMembersData[index],
-                                                                                        currency: value
-                                                                                    };
-                                                                                    setData('team_members_data', newTeamMembersData);
-                                                                                }
-                                                                            }}
-                                                                            disabled={processing}
-                                                                            className="h-8 text-sm"
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            )}
                                                         </div>
                                                     </div>
                                                 ))

@@ -57,18 +57,21 @@ final class ProjectController extends Controller
                 $teamMembers = collect($request->input('team_members'))->mapWithKeys(function ($memberId) use ($request) {
                     $isApprover = $request->has('approvers') && in_array($memberId, $request->input('approvers'), true);
 
+                    // Get the team entry to get the default currency
+                    $teamEntry = TeamStore::teamEntry(userId: auth()->id(), memberId: $memberId);
+
                     // Default values
                     $hourlyRate = 0;
-                    $currency = 'USD';
+                    $currency = $teamEntry ? ($teamEntry->currency ?? 'USD') : 'USD';
 
-                    // Find the team member data if it exists
+                    // Find the hourly rate from the request data
                     if ($request->has('team_members_data')) {
                         $memberData = collect($request->input('team_members_data'))
                             ->firstWhere('id', $memberId);
 
                         if ($memberData) {
                             $hourlyRate = $memberData['hourly_rate'];
-                            $currency = $memberData['currency'];
+                            // We don't get currency from request anymore, we use the one from team table
                         }
                     }
 
@@ -155,18 +158,21 @@ final class ProjectController extends Controller
                 $teamMembers = collect($request->input('team_members'))->mapWithKeys(function ($memberId) use ($request) {
                     $isApprover = $request->has('approvers') && in_array($memberId, $request->input('approvers'), true);
 
+                    // Get the team entry to get the default currency
+                    $teamEntry = TeamStore::teamEntry(userId: auth()->id(), memberId: $memberId);
+
                     // Default values
                     $hourlyRate = 0;
-                    $currency = 'USD';
+                    $currency = $teamEntry ? ($teamEntry->currency ?? 'USD') : 'USD';
 
-                    // Find the team member data if it exists
+                    // Find the hourly rate from the request data
                     if ($request->has('team_members_data')) {
                         $memberData = collect($request->input('team_members_data'))
                             ->firstWhere('id', $memberId);
 
                         if ($memberData) {
                             $hourlyRate = $memberData['hourly_rate'];
-                            $currency = $memberData['currency'];
+                            // We don't get currency from request anymore, we use the one from team table
                         }
                     }
 
