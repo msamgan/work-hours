@@ -25,12 +25,19 @@ type Client = {
     name: string
 }
 
+type TeamMemberData = {
+    id: number
+    hourly_rate: number
+    currency: string
+}
+
 type ProjectForm = {
     name: string
     description: string
     client_id: string
     team_members: number[]
     approvers: number[]
+    team_members_data: TeamMemberData[]
 }
 
 type Props = {
@@ -56,6 +63,7 @@ export default function CreateProject({ teamMembers, clients }: Props) {
         client_id: '',
         team_members: [],
         approvers: [],
+        team_members_data: [],
     })
 
     const submit: FormEventHandler = (e) => {
@@ -73,17 +81,35 @@ export default function CreateProject({ teamMembers, clients }: Props) {
 
     const handleTeamMemberToggle = (memberId: number) => {
         const currentMembers = [...data.team_members]
+        const currentMembersData = [...data.team_members_data]
         const index = currentMembers.indexOf(memberId)
 
         if (index === -1) {
             // Add member if not already selected
             currentMembers.push(memberId)
+
+            // Add default data for this member
+            currentMembersData.push({
+                id: memberId,
+                hourly_rate: 0,
+                currency: 'USD'
+            })
         } else {
             // Remove member if already selected
             currentMembers.splice(index, 1)
+
+            // Remove data for this member
+            const dataIndex = currentMembersData.findIndex(item => item.id === memberId)
+            if (dataIndex !== -1) {
+                currentMembersData.splice(dataIndex, 1)
+            }
         }
 
-        setData('team_members', currentMembers)
+        setData(data => ({
+            ...data,
+            team_members: currentMembers,
+            team_members_data: currentMembersData
+        }))
 
         // If a team member is removed, also remove them from approvers
         if (index !== -1 && data.approvers.includes(memberId)) {
@@ -202,15 +228,75 @@ export default function CreateProject({ teamMembers, clients }: Props) {
                                             {teamMembers && teamMembers.length > 0 ? (
                                                 teamMembers.map((member) => (
                                                     <div key={member.id} className="flex items-center space-x-2">
-                                                        <Checkbox
-                                                            id={`member-${member.id}`}
-                                                            checked={data.team_members.includes(member.id)}
-                                                            onCheckedChange={() => handleTeamMemberToggle(member.id)}
-                                                            disabled={processing}
-                                                        />
-                                                        <Label htmlFor={`member-${member.id}`} className="cursor-pointer text-sm">
-                                                            {member.name} ({member.email})
-                                                        </Label>
+                                                        <div className="flex flex-col space-y-2 w-full">
+                                                            <div className="flex items-center space-x-2">
+                                                                <Checkbox
+                                                                    id={`member-${member.id}`}
+                                                                    checked={data.team_members.includes(member.id)}
+                                                                    onCheckedChange={() => handleTeamMemberToggle(member.id)}
+                                                                    disabled={processing}
+                                                                />
+                                                                <Label htmlFor={`member-${member.id}`} className="cursor-pointer text-sm">
+                                                                    {member.name} ({member.email})
+                                                                </Label>
+                                                            </div>
+
+                                                            {data.team_members.includes(member.id) && (
+                                                                <div className="ml-6 grid grid-cols-2 gap-2">
+                                                                    <div>
+                                                                        <Label htmlFor={`hourly-rate-${member.id}`} className="text-xs">
+                                                                            Hourly Rate
+                                                                        </Label>
+                                                                        <Input
+                                                                            id={`hourly-rate-${member.id}`}
+                                                                            type="number"
+                                                                            min="0"
+                                                                            step="0.01"
+                                                                            value={data.team_members_data.find(m => m.id === member.id)?.hourly_rate || 0}
+                                                                            onChange={(e) => {
+                                                                                const value = parseFloat(e.target.value);
+                                                                                const newTeamMembersData = [...data.team_members_data];
+                                                                                const index = newTeamMembersData.findIndex(m => m.id === member.id);
+                                                                                if (index !== -1) {
+                                                                                    newTeamMembersData[index] = {
+                                                                                        ...newTeamMembersData[index],
+                                                                                        hourly_rate: value
+                                                                                    };
+                                                                                    setData('team_members_data', newTeamMembersData);
+                                                                                }
+                                                                            }}
+                                                                            disabled={processing}
+                                                                            className="h-8 text-sm"
+                                                                        />
+                                                                    </div>
+                                                                    <div>
+                                                                        <Label htmlFor={`currency-${member.id}`} className="text-xs">
+                                                                            Currency
+                                                                        </Label>
+                                                                        <Input
+                                                                            id={`currency-${member.id}`}
+                                                                            type="text"
+                                                                            maxLength={3}
+                                                                            value={data.team_members_data.find(m => m.id === member.id)?.currency || 'USD'}
+                                                                            onChange={(e) => {
+                                                                                const value = e.target.value.toUpperCase();
+                                                                                const newTeamMembersData = [...data.team_members_data];
+                                                                                const index = newTeamMembersData.findIndex(m => m.id === member.id);
+                                                                                if (index !== -1) {
+                                                                                    newTeamMembersData[index] = {
+                                                                                        ...newTeamMembersData[index],
+                                                                                        currency: value
+                                                                                    };
+                                                                                    setData('team_members_data', newTeamMembersData);
+                                                                                }
+                                                                            }}
+                                                                            disabled={processing}
+                                                                            className="h-8 text-sm"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 ))
                                             ) : (

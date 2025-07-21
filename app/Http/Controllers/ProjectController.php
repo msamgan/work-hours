@@ -57,7 +57,26 @@ final class ProjectController extends Controller
                 $teamMembers = collect($request->input('team_members'))->mapWithKeys(function ($memberId) use ($request) {
                     $isApprover = $request->has('approvers') && in_array($memberId, $request->input('approvers'), true);
 
-                    return [$memberId => ['is_approver' => $isApprover]];
+                    // Default values
+                    $hourlyRate = 0;
+                    $currency = 'USD';
+
+                    // Find the team member data if it exists
+                    if ($request->has('team_members_data')) {
+                        $memberData = collect($request->input('team_members_data'))
+                            ->firstWhere('id', $memberId);
+
+                        if ($memberData) {
+                            $hourlyRate = $memberData['hourly_rate'];
+                            $currency = $memberData['currency'];
+                        }
+                    }
+
+                    return [$memberId => [
+                        'is_approver' => $isApprover,
+                        'hourly_rate' => $hourlyRate,
+                        'currency' => $currency,
+                    ]];
                 })->toArray();
 
                 $project->teamMembers()->sync($teamMembers);
@@ -95,6 +114,15 @@ final class ProjectController extends Controller
         $assignedTeamMembers = $project->teamMembers->pluck('id')->toArray();
         $assignedApprovers = $project->approvers->pluck('id')->toArray();
 
+        // Get team members data including hourly_rate and currency
+        $assignedTeamMembersData = $project->teamMembers->map(function ($member) {
+            return [
+                'id' => $member->id,
+                'hourly_rate' => $member->pivot->hourly_rate ?? 0,
+                'currency' => $member->pivot->currency ?? 'USD',
+            ];
+        })->toArray();
+
         $clients = ClientStore::userClients(auth()->id())
             ->map(fn ($client): array => [
                 'id' => $client->id,
@@ -106,6 +134,7 @@ final class ProjectController extends Controller
             'teamMembers' => $teamMembers,
             'assignedTeamMembers' => $assignedTeamMembers,
             'assignedApprovers' => $assignedApprovers,
+            'assignedTeamMembersData' => $assignedTeamMembersData,
             'clients' => $clients,
         ]);
     }
@@ -126,7 +155,26 @@ final class ProjectController extends Controller
                 $teamMembers = collect($request->input('team_members'))->mapWithKeys(function ($memberId) use ($request) {
                     $isApprover = $request->has('approvers') && in_array($memberId, $request->input('approvers'), true);
 
-                    return [$memberId => ['is_approver' => $isApprover]];
+                    // Default values
+                    $hourlyRate = 0;
+                    $currency = 'USD';
+
+                    // Find the team member data if it exists
+                    if ($request->has('team_members_data')) {
+                        $memberData = collect($request->input('team_members_data'))
+                            ->firstWhere('id', $memberId);
+
+                        if ($memberData) {
+                            $hourlyRate = $memberData['hourly_rate'];
+                            $currency = $memberData['currency'];
+                        }
+                    }
+
+                    return [$memberId => [
+                        'is_approver' => $isApprover,
+                        'hourly_rate' => $hourlyRate,
+                        'currency' => $currency,
+                    ]];
                 })->toArray();
 
                 $project->teamMembers()->sync($teamMembers);

@@ -12,5 +12,7 @@ class ProjectTeam extends Model
         'project_id',
         'member_id',
         'is_approver',
+        'hourly_rate',
+        'currency',
     ];
 }

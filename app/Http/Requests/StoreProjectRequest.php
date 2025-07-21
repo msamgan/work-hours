@@ -32,6 +32,10 @@ final class StoreProjectRequest extends FormRequest
             'team_members.*' => ['exists:users,id'],
             'approvers' => ['nullable', 'array'],
             'approvers.*' => ['exists:users,id'],
+            'team_members_data' => ['nullable', 'array'],
+            'team_members_data.*.id' => ['required', 'exists:users,id'],
+            'team_members_data.*.hourly_rate' => ['required', 'numeric', 'min:0'],
+            'team_members_data.*.currency' => ['required', 'string', 'size:3'],
         ];
     }
 }
