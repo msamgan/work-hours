@@ -150,7 +150,7 @@ export default function CreateProject({ teamMembers, clients }: Props) {
                     <p className="mt-1 text-gray-500 dark:text-gray-400">Create a new project</p>
                 </section>
 
-                <Card className="max-w-2xl overflow-hidden transition-all hover:shadow-md">
+                <Card className="max-w-4xl overflow-hidden transition-all hover:shadow-md">
                     <CardHeader>
                         <CardTitle className="text-xl">Project Details</CardTitle>
                         <CardDescription>Enter the information for the new project</CardDescription>
@@ -263,7 +263,7 @@ export default function CreateProject({ teamMembers, clients }: Props) {
                                                                                     }
                                                                                 }}
                                                                                 disabled={processing}
-                                                                                className="ml-2 h-8 w-24 text-sm inline-block"
+                                                                                className="ml-2 h-8 w-32 text-sm inline-block"
                                                                             />
                                                                             <span className="ml-1">{data.team_members_data.find(m => m.id === member.id)?.currency || teamMembers.find(m => m.id === member.id)?.currency || 'USD'}</span>
                                                                         </span>
