@@ -16,6 +16,7 @@ final class ProjectStore
         $ownedProjects = Project::query()
             ->where('user_id', $userId)
             ->with(['teamMembers', 'approvers', 'user'])
+            ->orderByDesc('created_at')
             ->get();
 
         $assignedProjects = Project::query()
@@ -24,6 +25,7 @@ final class ProjectStore
             })
             ->where('user_id', '!=', $userId)
             ->with(['teamMembers', 'approvers', 'user'])
+            ->orderByDesc('created_at')
             ->get();
 
         return $ownedProjects->concat($assignedProjects);
