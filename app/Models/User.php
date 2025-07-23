@@ -83,6 +83,11 @@ final class User extends Authenticatable implements MustVerifyEmail
             ->withTimestamps();
     }
 
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return str_ends_with($this->email, '@workhours.us') && $this->hasVerifiedEmail();
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -94,10 +99,5 @@ final class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return str_ends_with($this->email, '@workhours.us') && $this->hasVerifiedEmail();
     }
 }

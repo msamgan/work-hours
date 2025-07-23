@@ -1,6 +1,6 @@
 import { type SharedData } from '@/types'
 import { usePage } from '@inertiajs/react'
-import { BarChart2, Briefcase, Calendar, CheckSquare, Clock, DollarSign, Github, Upload, Users } from 'lucide-react'
+import { BarChart2, Briefcase, CheckSquare, Clock, DollarSign, Github, Upload, Users } from 'lucide-react'
 
 export default function Features() {
     const { auth } = usePage<SharedData>().props
