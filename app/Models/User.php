@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Policies\TeamPolicy;
 use Database\Factories\UserFactory;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Collection;
@@ -93,5 +94,10 @@ final class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return str_ends_with($this->email, '@workhours.us') && $this->hasVerifiedEmail();
     }
 }

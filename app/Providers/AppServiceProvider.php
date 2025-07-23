@@ -16,7 +16,7 @@ final class AppServiceProvider extends ServiceProvider
     #[Override]
     public function register(): void
     {
-        Model::unguard();
+
     }
 
     /**
@@ -24,6 +24,6 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Model::unguard();
     }
 }
