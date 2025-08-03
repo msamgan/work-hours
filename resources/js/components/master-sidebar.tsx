@@ -17,6 +17,7 @@ import {
     LucideServerCog,
     Settings,
     TimerIcon,
+    Trello,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import AppLogo from './app-logo'
@@ -80,6 +81,11 @@ const integrationNavItems: NavItem[] = [
         href: '/github/repositories',
         icon: Github,
     },
+    {
+        title: 'Trello',
+        href: '/trello/boards',
+        icon: Trello,
+    },
 ]
 
 const footerNavItems: NavItem[] = [
@@ -91,7 +97,7 @@ const footerNavItems: NavItem[] = [
 ]
 
 export function MasterSidebar({ collapsed }: MasterSidebarProps) {
-    const { isGitHubIntegrated, auth } = usePage<SharedData>().props
+    const { isGitHubIntegrated, isTrelloIntegrated, auth } = usePage<SharedData>().props
     const [approvalCount, setApprovalCount] = useState(0)
 
     // Fetch approval count when component mounts
@@ -113,6 +119,16 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
         // Cleanup interval on component unmount
         return () => clearInterval(intervalId)
     }, [])
+
+    // Filter integration items based on what's integrated
+    const availableIntegrations = integrationNavItems.filter(item => {
+        if (item.title === 'GitHub') return isGitHubIntegrated;
+        if (item.title === 'Trello') return isTrelloIntegrated;
+        return false;
+    });
+
+    // Check if any integrations are available
+    const hasIntegrations = availableIntegrations.length > 0;
 
     return (
         <div
@@ -206,7 +222,7 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                 </div>
 
                 {/* Integration Navigation */}
-                {isGitHubIntegrated && (
+                {hasIntegrations && (
                     <div className="mb-6">
                         <div className="mb-3 border-b border-gray-300 pb-2 dark:border-gray-600">
                             <h3
@@ -219,7 +235,7 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                         </div>
                         <TooltipProvider>
                             <nav className="relative z-10 space-y-1">
-                                {integrationNavItems.map((item) => {
+                                {availableIntegrations.map((item) => {
                                     const isActive =
                                         typeof window !== 'undefined' &&
                                         (window.location.pathname === item.href || window.location.pathname.startsWith(`${item.href}/`))
