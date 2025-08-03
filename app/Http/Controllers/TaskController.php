@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Adapters\GitHubAdapter;
+use App\Adapters\TrelloAdapter;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Stores\ProjectStore;
@@ -35,7 +36,12 @@ final class TaskController extends Controller
         /**
          * GitHub adapter for handling GitHub-related operations
          */
-        private GitHubAdapter $gitHubAdapter
+        private GitHubAdapter $gitHubAdapter,
+
+        /**
+         * Trello adapter for handling Trello-related operations
+         */
+        private TrelloAdapter $trelloAdapter,
     ) {}
 
     /**
@@ -124,6 +130,11 @@ final class TaskController extends Controller
             // Check if we need to create a GitHub issue for this task
             if ($request->boolean('create_github_issue')) {
                 $this->gitHubAdapter->createGitHubIssue($task);
+            }
+
+            // Check if we need to create a Trello card for this task
+            if ($request->boolean('create_trello_card')) {
+                $this->trelloAdapter->createTrelloCard($task);
             }
 
             DB::commit();
@@ -263,6 +274,11 @@ final class TaskController extends Controller
                 $this->gitHubAdapter->updateGitHubIssue($task);
             }
 
+            // Update Trello card if requested
+            if ($task->is_imported && $task->meta && $task->meta->source === 'trello' && $request->boolean('trello_update')) {
+                $this->trelloAdapter->updateTrelloCard($task);
+            }
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -286,6 +302,11 @@ final class TaskController extends Controller
         try {
             if (request()->boolean('delete_from_github') && $task->is_imported && $task->meta && $task->meta->source === 'github') {
                 $this->gitHubAdapter->deleteGitHubIssue($task);
+            }
+
+            // Delete from Trello if requested
+            if (request()->boolean('delete_from_trello') && $task->is_imported && $task->meta && $task->meta->source === 'trello') {
+                $this->trelloAdapter->deleteTrelloCard($task);
             }
 
             // Detach all assignees first

@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -49,8 +48,14 @@ return [
         'redirect' => env('GITHUB_REDIRECT_URI', '/auth/github/callback'),
     ],
 
+    'trello' => [
+        'client_id' => env('TRELLO_KEY'),
+        'client_secret' => env('TRELLO_SECRET'),
+        'redirect' => env('TRELLO_REDIRECT_URI', '/auth/trello/callback'),
+        'key' => env('TRELLO_KEY'),
+    ],
+
     'google_gemini' => [
         'api_key' => env('GOOGLE_GEMINI_API_KEY'),
     ],
-
 ];
