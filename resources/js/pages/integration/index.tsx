@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react'
-import { Github } from 'lucide-react'
+import { Github, Trello } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,6 +8,7 @@ import { type BreadcrumbItem } from '@/types'
 
 type Props = {
     isGitHubIntegrated: boolean
+    isTrelloIntegrated: boolean
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -17,7 +18,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ]
 
-export default function Integration({ isGitHubIntegrated }: Props) {
+export default function Integration({ isGitHubIntegrated, isTrelloIntegrated }: Props) {
     return (
         <MasterLayout breadcrumbs={breadcrumbs}>
             <Head title="Integration" />
@@ -51,6 +52,36 @@ export default function Integration({ isGitHubIntegrated }: Props) {
                                     <a href="/auth/github">
                                         <Github className="mr-2 h-4 w-4" />
                                         Connect with GitHub
+                                    </a>
+                                </Button>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card className="overflow-hidden transition-all hover:shadow-md">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-xl">
+                            <Trello className="h-6 w-6" />
+                            Trello Integration
+                        </CardTitle>
+                        <CardDescription>Connect your Trello account to access and manage boards and cards</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {isTrelloIntegrated ? (
+                            <div className="flex flex-row items-center justify-between">
+                                <p className="text-green-600 dark:text-green-400">Your account is integrated with Trello.</p>
+                                <Button asChild variant="outline">
+                                    <Link href="/trello/boards">Manage Boards</Link>
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="flex flex-row items-center justify-between">
+                                <p className="text-muted-foreground">Connect your Trello account to access and manage your boards and cards.</p>
+                                <Button asChild>
+                                    <a href="/auth/trello">
+                                        <Trello className="mr-2 h-4 w-4" />
+                                        Connect with Trello
                                     </a>
                                 </Button>
                             </div>

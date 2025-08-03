@@ -17,9 +17,11 @@ final class IntegrationController extends Controller
     {
         $user = Auth::user();
         $isGitHubIntegrated = ! empty($user->github_token);
+        $isTrelloIntegrated = ! empty($user->trello_token);
 
         return Inertia::render('integration/index', [
             'isGitHubIntegrated' => $isGitHubIntegrated,
+            'isTrelloIntegrated' => $isTrelloIntegrated,
         ]);
     }
 }
