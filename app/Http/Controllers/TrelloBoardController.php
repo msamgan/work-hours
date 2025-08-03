@@ -12,32 +12,47 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
+use Inertia\Response;
 
 final class TrelloBoardController extends Controller
 {
     public function __construct(private readonly TrelloAdapter $trelloAdapter) {}
 
     /**
+     * Display the Trello boards page.
+     */
+    public function index(): Response
+    {
+        return Inertia::render('trello/boards');
+    }
+
+    /**
      * Get all boards for the authenticated user.
      */
-    public function getBoards(): JsonResponse
+    public function getBoards(): Response
     {
         $user = Auth::user();
+        $boards = [];
+        $error = null;
 
         if (! $user->trello_token) {
-            return response()->json(['error' => 'No Trello authentication found.'], 401);
+            $error = 'No Trello authentication found.';
+        } else {
+            // Get the Trello API key from config or env directly with fallback
+            $key = config('services.trello.client_id');
+
+            if (! $key) {
+                $error = 'Trello API key not configured.';
+            } else {
+                $boards = $this->trelloAdapter->getBoards($user->trello_token, $key);
+            }
         }
 
-        // Get the Trello API key from config or env directly with fallback
-        $key = config('services.trello.client_id');
-
-        if (! $key) {
-            return response()->json(['error' => 'Trello API key not configured.'], 500);
-        }
-
-        $boards = $this->trelloAdapter->getBoards($user->trello_token, $key);
-
-        return response()->json($boards);
+        return Inertia::render('trello/boards', [
+            'boards' => $boards,
+            'error' => $error,
+        ]);
     }
 
     /**
