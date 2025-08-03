@@ -18,6 +18,7 @@
         "maatwebsite/excel": "^3.1",
         "msamgan/lact": "^1.2",
         "nunomaduro/essentials": "^0.1.0",
+        "socialiteproviders/trello": "^4.1",
         "tightenco/ziggy": "^2.4"
     },
     "require-dev": {

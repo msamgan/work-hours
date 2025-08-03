@@ -52,7 +52,6 @@ return [
         'client_id' => env('TRELLO_KEY'),
         'client_secret' => env('TRELLO_SECRET'),
         'redirect' => env('TRELLO_REDIRECT_URI', '/auth/trello/callback'),
-        'key' => env('TRELLO_KEY'),
     ],
 
     'google_gemini' => [

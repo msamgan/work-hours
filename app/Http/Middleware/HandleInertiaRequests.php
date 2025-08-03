@@ -57,6 +57,7 @@ final class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'isGitHubIntegrated' => $request->user() && ! empty($request->user()->github_token),
+            'isTrelloIntegrated' => $request->user() && ! empty($request->user()->trello_token),
         ];
     }
 }

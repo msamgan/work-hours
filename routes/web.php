@@ -16,7 +16,9 @@ use App\Http\Controllers\TimeLogController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', fn () => Inertia::render('welcome'))->name('home');
+Route::get('/', function () {
+    return Inertia::render('welcome');
+})->name('home');
 
 // Feature pages
 Route::get('/features/time-tracking', fn () => Inertia::render('features/TimeTracking'))->name('features.time-tracking');

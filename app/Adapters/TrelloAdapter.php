@@ -85,7 +85,7 @@ final class TrelloAdapter
     public function redirectToTrello(): RedirectResponse
     {
         return Socialite::driver('trello')
-            ->scopes(['read', 'write'])
+            ->scopes(['read', 'write', 'account'])
             ->redirect();
     }
 

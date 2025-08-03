@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Log;
 
 final class TrelloAuthController extends Controller
 {
-    public function __construct(private readonly TrelloAdapter $trelloAdapter) {}
+    public function __construct(private readonly TrelloAdapter $trelloAdapter)
+    {
+    }
 
     /**
      * Redirect the user to the Trello authentication page.
@@ -31,22 +33,17 @@ final class TrelloAuthController extends Controller
     {
         try {
             $trelloData = $this->trelloAdapter->handleTrelloCallback();
-            $user = $trelloData['user'];
 
-            // Store Trello token in user's record
-            $user->update([
-                'trello_token' => $trelloData['token'],
-            ]);
+            $user = Auth::user();
 
-            Auth::login($user, true);
+            $user->update(['trello_token' => $trelloData['token']]);
 
-            return redirect()->route('dashboard')->with('status', 'Successfully authenticated with Trello!');
+            return redirect()->route('dashboard');
 
         } catch (Exception $e) {
             Log::error('Trello authentication error: ' . $e->getMessage());
 
-            return redirect()->route('login')
-                ->with('error', 'An error occurred during Trello authentication.');
+            return redirect()->route('login');
         }
     }
 }
