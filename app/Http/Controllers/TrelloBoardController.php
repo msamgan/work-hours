@@ -28,7 +28,13 @@ final class TrelloBoardController extends Controller
             return response()->json(['error' => 'No Trello authentication found.'], 401);
         }
 
-        $key = config('services.trello.key');
+        // Get the Trello API key from config or env directly with fallback
+        $key = config('services.trello.client_id');
+
+        if (! $key) {
+            return response()->json(['error' => 'Trello API key not configured.'], 500);
+        }
+
         $boards = $this->trelloAdapter->getBoards($user->trello_token, $key);
 
         return response()->json($boards);
@@ -45,7 +51,13 @@ final class TrelloBoardController extends Controller
             return response()->json(['error' => 'No Trello authentication found.'], 401);
         }
 
-        $key = config('services.trello.key');
+        // Get the Trello API key from config or env directly with fallback
+        $key = config('services.trello.client_id');
+
+        if (! $key) {
+            return response()->json(['error' => 'Trello API key not configured.'], 500);
+        }
+
         $lists = $this->trelloAdapter->getBoardLists($user->trello_token, $key, $boardId);
 
         return response()->json($lists);
@@ -62,7 +74,13 @@ final class TrelloBoardController extends Controller
             return response()->json(['error' => 'No Trello authentication found.'], 401);
         }
 
-        $key = config('services.trello.key');
+        // Get the Trello API key from config or env directly with fallback
+        $key = config('services.trello.client_id');
+
+        if (! $key) {
+            return response()->json(['error' => 'Trello API key not configured.'], 500);
+        }
+
         $cards = $this->trelloAdapter->getListCards($user->trello_token, $key, $listId);
 
         return response()->json($cards);
@@ -134,7 +152,13 @@ final class TrelloBoardController extends Controller
         }
 
         try {
-            $key = config('services.trello.key');
+            // Get the Trello API key from config or env directly with fallback
+            $key = config('services.trello.client_id');
+
+            if (! $key) {
+                return response()->json(['error' => 'Trello API key not configured.'], 500);
+            }
+
             $cards = $this->trelloAdapter->getListCards($user->trello_token, $key, $request->list_id);
 
             if ($cards instanceof JsonResponse) {

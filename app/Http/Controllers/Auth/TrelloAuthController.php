@@ -14,9 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 final class TrelloAuthController extends Controller
 {
-    public function __construct(private readonly TrelloAdapter $trelloAdapter)
-    {
-    }
+    public function __construct(private readonly TrelloAdapter $trelloAdapter) {}
 
     /**
      * Redirect the user to the Trello authentication page.

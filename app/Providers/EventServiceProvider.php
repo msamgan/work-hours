@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Override;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Trello\TrelloExtendSocialite;
 
-class EventServiceProvider extends ServiceProvider
+final class EventServiceProvider extends ServiceProvider
 {
     /**
      * The event to listener mappings for the application.
@@ -20,13 +23,14 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         SocialiteWasCalled::class => [
-            TrelloExtendSocialite::class.'@handle',
+            TrelloExtendSocialite::class . '@handle',
         ],
     ];
 
     /**
      * Register any events for your application.
      */
+    #[Override]
     public function boot(): void
     {
         //
@@ -35,6 +39,7 @@ class EventServiceProvider extends ServiceProvider
     /**
      * Determine if events and listeners should be automatically discovered.
      */
+    #[Override]
     public function shouldDiscoverEvents(): bool
     {
         return false;

@@ -121,14 +121,14 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
     }, [])
 
     // Filter integration items based on what's integrated
-    const availableIntegrations = integrationNavItems.filter(item => {
-        if (item.title === 'GitHub') return isGitHubIntegrated;
-        if (item.title === 'Trello') return isTrelloIntegrated;
-        return false;
-    });
+    const availableIntegrations = integrationNavItems.filter((item) => {
+        if (item.title === 'GitHub') return isGitHubIntegrated
+        if (item.title === 'Trello') return isTrelloIntegrated
+        return false
+    })
 
     // Check if any integrations are available
-    const hasIntegrations = availableIntegrations.length > 0;
+    const hasIntegrations = availableIntegrations.length > 0
 
     return (
         <div
