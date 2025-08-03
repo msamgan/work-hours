@@ -166,8 +166,8 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                     <div
                         key={board.id}
                         className={cn(
-                            "flex flex-col rounded-lg border bg-card p-4 shadow-sm transition-all hover:bg-accent/10 hover:shadow-md",
-                            selectedBoard?.id === board.id && "bg-accent/10 shadow-md"
+                            "flex flex-col rounded-lg border bg-card p-4 shadow-sm transition-all hover:shadow hover:border-muted",
+                            selectedBoard?.id === board.id && "border-primary/30 shadow"
                         )}
                     >
                         <div className="flex items-start justify-between">
@@ -191,7 +191,7 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="border-primary/30 p-4 text-primary transition-all hover:bg-primary/10 hover:text-primary-foreground"
+                                        className="border-primary/30 p-4 text-primary hover:bg-primary hover:text-primary-foreground"
                                         onClick={() => fetchBoardLists(board.id)}
                                         disabled={importingBoard === board.id}
                                     >
@@ -220,7 +220,7 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                         variant="ghost"
                                         size="icon"
                                         asChild
-                                        className="text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                                        className="text-muted-foreground hover:bg-muted hover:text-foreground"
                                     >
                                         <a href={board.url} target="_blank" rel="noopener noreferrer" title="Open in Trello">
                                             <ExternalLink className="h-4 w-4" />
@@ -246,8 +246,8 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                                     key={list.id}
                                                     onClick={() => setSelectedListId(list.id)}
                                                     className={cn(
-                                                        "cursor-pointer rounded-md border p-2 text-sm transition-colors hover:bg-accent/10",
-                                                        selectedListId === list.id && "bg-accent/20 border-primary/50"
+                                                        "cursor-pointer rounded-md border p-2 text-sm transition-colors hover:bg-muted",
+                                                        selectedListId === list.id && "bg-primary/10 border-primary/50"
                                                     )}
                                                 >
                                                     {list.name}
@@ -260,8 +260,8 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                         <Button
                                             onClick={() => handleImportBoard(board)}
                                             disabled={!selectedListId || importingBoard === board.id}
-                                            className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20"
-                                            variant="outline"
+                                            className="border-primary p-4 bg-primary text-primary-foreground hover:bg-primary/90"
+                                            variant="default"
                                             size="sm"
                                         >
                                             {importingBoard === board.id ? (
