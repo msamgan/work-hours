@@ -35,6 +35,7 @@ import {
     Plus,
     Search,
     TimerReset,
+    Trello,
 } from 'lucide-react'
 import { JSX, useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -622,7 +623,8 @@ export default function Tasks() {
                                             <TableCell className="max-w-xl font-medium">
                                                 <div className="flex flex-wrap items-center gap-2">
                                                     <span>{task.title}</span>
-                                                    {task.is_imported && <GithubIcon className="h-3 w-3 text-purple-600 dark:text-purple-400" />}
+                                                    {task.is_imported && task.meta?.source === 'github' && <GithubIcon className="h-3 w-3 text-purple-600 dark:text-purple-400" />}
+                                                    {task.is_imported && task.meta?.source === 'trello' && <Trello className="h-3 w-3 text-blue-600 dark:text-blue-400" />}
                                                 </div>
                                                 <div className="flex flex-wrap items-center gap-2">
                                                     <small>{task.project.name}</small>
