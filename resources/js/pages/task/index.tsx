@@ -629,7 +629,7 @@ export default function Tasks() {
                                                 <div className="flex flex-wrap items-center gap-2">
                                                     <small>
                                                         {task.is_imported && task.meta?.source === 'trello' && task.meta?.extra_data?.list_name && (
-                                                            <span className="mr-1 text-blue-600 dark:text-blue-400">{task.meta.extra_data.list_name} / </span>
+                                                            <span className="mr-1">{task.meta.extra_data.list_name} / </span>
                                                         )}
                                                         {task.project.name}
                                                     </small>
