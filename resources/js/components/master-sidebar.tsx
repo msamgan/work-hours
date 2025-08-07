@@ -20,6 +20,7 @@ import {
     LucideServerCog,
     Settings,
     TimerIcon,
+    Trello,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import AppLogo from './app-logo'
@@ -119,6 +120,11 @@ const integrationNavItems: NavItem[] = [
         title: 'GitHub',
         href: '/github/repositories',
         icon: Github,
+    },
+    {
+        title: 'Trello',
+        href: '/trello/boards',
+        icon: Trello,
     },
 ]
 
@@ -290,7 +296,7 @@ function SidebarGroup({
 }
 
 export function MasterSidebar({ collapsed }: MasterSidebarProps) {
-    const { isGitHubIntegrated, auth } = usePage<SharedData>().props
+    const { isGitHubIntegrated, isTrelloIntegrated, auth } = usePage<SharedData>().props
     const [approvalCount, setApprovalCount] = useState(0)
     const [pendingTaskCount, setPendingTaskCount] = useState(0)
 
@@ -384,7 +390,7 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                 </div>
 
                 {/* Integration Navigation */}
-                {isGitHubIntegrated && (
+                {(isGitHubIntegrated || isTrelloIntegrated) && (
                     <div className="mb-6">
                         <div className="mb-3 border-b border-gray-300 pb-2 dark:border-gray-600">
                             <h3
@@ -397,7 +403,10 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                         </div>
                         <TooltipProvider>
                             <nav className="relative z-10 space-y-1">
-                                {integrationNavItems.map((item) => {
+                                {integrationNavItems.filter(item =>
+                                    (item.title === "GitHub" && isGitHubIntegrated) ||
+                                    (item.title === "Trello" && isTrelloIntegrated)
+                                ).map((item) => {
                                     const isActive =
                                         typeof window !== 'undefined' &&
                                         (window.location.pathname === item.href || window.location.pathname.startsWith(`${item.href}/`))

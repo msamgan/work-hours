@@ -29,6 +29,7 @@ export interface SharedData {
     ziggy: Config & { location: string }
     sidebarOpen: boolean
     isGitHubIntegrated?: boolean
+    isTrelloIntegrated?: boolean
     [key: string]: unknown
 }
 
@@ -41,5 +42,5 @@ export interface User {
     created_at: string
     updated_at: string
     hourly_rate: number | null
-    [key: string]: unknown // This allows for additional properties...
+    [key: string]: unknown
 }
