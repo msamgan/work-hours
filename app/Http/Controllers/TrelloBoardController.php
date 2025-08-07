@@ -109,7 +109,6 @@ final class TrelloBoardController extends Controller
         $request->validate([
             'board_id' => 'required|string',
             'board_name' => 'required|string',
-            'default_list_id' => 'required|string',
         ]);
 
         $user = Auth::user();
@@ -119,20 +118,88 @@ final class TrelloBoardController extends Controller
         }
 
         try {
-            // Format project name to store Trello IDs
-            $projectName = $request->board_name . '|' . $request->board_id . '|' . $request->default_list_id;
+            // Get the Trello API key from config
+            $key = config('services.trello.client_id');
 
-            // Create or update project
+            if (! $key) {
+                return response()->json(['error' => 'Trello API key not configured.'], 500);
+            }
+
+            // Create project
             $project = Project::query()->updateOrCreate([
                 'user_id' => $user->id,
-                'name' => $projectName,
+                'name' => $request->board_name,
             ], [
                 'description' => 'Imported from Trello',
                 'source' => 'trello',
             ]);
 
+            // Get all lists from the board
+            $lists = $this->trelloAdapter->getBoardLists($user->trello_token, $key, $request->board_id);
+
+            if (empty($lists)) {
+                return response()->json([
+                    'message' => 'Board successfully imported as project, but no lists were found.',
+                    'project' => $project,
+                ]);
+            }
+
+            $importedCount = 0;
+
+            // Import cards from all lists
+            foreach ($lists as $list) {
+                $listId = $list['id'];
+                $listName = $list['name'];
+
+                // Skip archived/closed lists if needed
+                if (isset($list['closed']) && $list['closed'] === true) {
+                    continue;
+                }
+
+                // Fetch cards from this list
+                $cards = $this->trelloAdapter->getListCards($user->trello_token, $key, $listId);
+
+                if (empty($cards)) {
+                    continue; // Skip to next list if no cards found
+                }
+
+                foreach ($cards as $card) {
+                    // Create task from card
+                    $task = $project->tasks()->updateOrCreate(
+                        [
+                            'title' => $card['name'],
+                        ],
+                        [
+                            'description' => $card['desc'] ?? null,
+                            'due_date' => isset($card['due']) ? Carbon::parse($card['due']) : null,
+                            'status' => isset($card['closed']) ? 'completed' : 'pending',
+                            'priority' => $this->getPriorityFromLabels($card['labels'] ?? []),
+                            'is_imported' => true,
+                        ]
+                    );
+
+                    // Store card metadata with list name in extra_data
+                    $task->meta()->updateOrCreate(
+                        ['task_id' => $task->id],
+                        [
+                            'source' => 'trello',
+                            'source_number' => $card['id'],
+                            'source_state' => isset($card['closed']) ? 'archived' : 'active',
+                            'source_url' => $card['shortUrl'] ?? null,
+                            'source_id' => $card['id'],
+                            'extra_data' => [
+                                'list_name' => $listName,
+                                'list_id' => $listId,
+                            ],
+                        ]
+                    );
+
+                    $importedCount++;
+                }
+            }
+
             return response()->json([
-                'message' => 'Board successfully imported as project',
+                'message' => "Board successfully imported as project with {$importedCount} tasks from all lists",
                 'project' => $project,
             ]);
 

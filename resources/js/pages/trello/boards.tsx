@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react'
 import axios from 'axios'
-import { Download, ExternalLink, Trello, Loader2, Search } from 'lucide-react'
+import { Download, ExternalLink, Loader2, Search, Trello } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
@@ -8,10 +8,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
 import MasterLayout from '@/layouts/master-layout'
 import { cn } from '@/lib/utils'
-import { type BreadcrumbItem, type NavItem } from '@/types'
+import { type BreadcrumbItem } from '@/types'
 import { toast } from 'sonner'
 
 type Board = {
@@ -60,18 +59,17 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
             setFetchingLists(true)
             const response = await axios.get(route('trello.board.lists', { boardId }))
 
-            const updatedBoards = boards.map(board => {
+            const updatedBoards = boards.map((board) => {
                 if (board.id === boardId) {
-                    return { ...board, lists: response.data };
+                    return { ...board, lists: response.data }
                 }
 
-                return board;
-            });
+                return board
+            })
 
-            setBoards(updatedBoards);
-            const board = updatedBoards.find(b => b.id === boardId);
-            setSelectedBoard(board || null);
-
+            setBoards(updatedBoards)
+            const board = updatedBoards.find((b) => b.id === boardId)
+            setSelectedBoard(board || null)
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
                 toast.error(error.response.data.error)
@@ -81,30 +79,22 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
         } finally {
             setFetchingLists(false)
         }
-    };
+    }
 
     const handleImportBoard = async (board: Board) => {
-        if (!selectedListId) {
-            toast.error('Please select a default list first')
-            return
-        }
-
         try {
             setImportingBoard(board.id)
             const response = await axios.post(route('trello.board.import'), {
                 board_id: board.id,
                 board_name: board.name,
-                default_list_id: selectedListId,
             })
 
             if (response.data.error) {
                 toast.error(response.data.error)
             } else {
-                toast.success('Board successfully imported as a project!')
+                toast.success(response.data.message || 'Board successfully imported as a project!')
                 // Update the board's state to show it as imported
-                setBoards(boards.map(b =>
-                    b.id === board.id ? { ...b, is_imported: true } : b
-                ))
+                setBoards(boards.map((b) => (b.id === board.id ? { ...b, is_imported: true } : b)))
             }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
@@ -125,20 +115,20 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
         }
     }, [])
 
-    const filteredBoards = boards.filter(board => {
+    const filteredBoards = boards.filter((board) => {
         // First apply the search filter
-        const matchesSearch = board.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (board.desc && board.desc.toLowerCase().includes(searchTerm.toLowerCase()));
+        const matchesSearch =
+            board.name.toLowerCase().includes(searchTerm.toLowerCase()) || (board.desc && board.desc.toLowerCase().includes(searchTerm.toLowerCase()))
 
         // Then apply the tab filter
-        if (!matchesSearch) return false;
+        if (!matchesSearch) return false
 
-        if (activeTab === 'active') return !board.closed;
-        if (activeTab === 'closed') return board.closed;
+        if (activeTab === 'active') return !board.closed
+        if (activeTab === 'closed') return board.closed
 
         // 'all' tab or default
-        return true;
-    });
+        return true
+    })
 
     const renderBoardsList = () => {
         if (isLoading) {
@@ -206,10 +196,10 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                 <div className="flex items-center gap-2">
                                     {!board.is_imported ? (
                                         <Button
-                                            variant="outline"
+                                            variant="default"
                                             size="sm"
-                                            className="border-primary/30 p-4 text-primary transition-all hover:bg-primary/10 hover:text-primary-foreground"
-                                            onClick={() => fetchBoardLists(board.id)}
+                                            className="bg-primary p-4 text-primary-foreground transition-all hover:bg-primary/90"
+                                            onClick={() => handleImportBoard(board)}
                                             disabled={importingBoard === board.id}
                                         >
                                             {importingBoard === board.id ? (
@@ -220,7 +210,7 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                             ) : (
                                                 <>
                                                     <Download className="mr-1 h-4 w-4" />
-                                                    Select Lists
+                                                    Import Board
                                                 </>
                                             )}
                                         </Button>
@@ -302,7 +292,7 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                     </Card>
                 </div>
             </MasterLayout>
-        );
+        )
     }
 
     return (
@@ -323,18 +313,14 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-xl">
                                     <Trello className="h-5 w-5" />
-                                    {activeTab === 'all'
-                                        ? 'All Boards'
-                                        : activeTab === 'active'
-                                            ? 'Active Boards'
-                                            : 'Closed Boards'}
+                                    {activeTab === 'all' ? 'All Boards' : activeTab === 'active' ? 'Active Boards' : 'Closed Boards'}
                                 </CardTitle>
                                 <CardDescription>
                                     {activeTab === 'all'
                                         ? 'Browse all your Trello boards'
                                         : activeTab === 'active'
-                                            ? 'Browse your active Trello boards'
-                                            : 'Browse your closed Trello boards'}
+                                          ? 'Browse your active Trello boards'
+                                          : 'Browse your closed Trello boards'}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -363,7 +349,7 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                             <Card className="border-primary/10">
                                 <CardHeader>
                                     <CardTitle className="text-xl">
-                                        <Trello className="mr-2 h-5 w-5 inline-block align-middle" />
+                                        <Trello className="mr-2 inline-block h-5 w-5 align-middle" />
                                         Board Details
                                     </CardTitle>
                                 </CardHeader>
@@ -382,7 +368,6 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                         )}
 
                                         <div className="mb-4">
-                                            <h4 className="text-sm font-medium text-muted-foreground">Lists</h4>
                                             {fetchingLists ? (
                                                 <div className="flex justify-center py-4">
                                                     <Loader2 className="h-5 w-5 animate-spin text-primary" />
@@ -390,18 +375,20 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                             ) : (
                                                 <div className="space-y-2">
                                                     {selectedBoard.lists && selectedBoard.lists.length > 0 ? (
-                                                        selectedBoard.lists.map(list => (
+                                                        selectedBoard.lists.map((list) => (
                                                             <div
                                                                 key={list.id}
                                                                 onClick={() => setSelectedListId(list.id)}
                                                                 className={cn(
-                                                                    "cursor-pointer rounded-md border p-3 text-sm transition-colors hover:bg-muted",
-                                                                    selectedListId === list.id && "bg-primary/10 border-primary/50"
+                                                                    'cursor-pointer rounded-md border p-3 text-sm transition-colors hover:bg-muted',
+                                                                    selectedListId === list.id && 'border-primary/50 bg-primary/10',
                                                                 )}
                                                             >
                                                                 {list.name}
                                                                 {selectedListId === list.id && (
-                                                                    <Badge className="ml-2 bg-primary/20 text-primary border-primary/30">Selected</Badge>
+                                                                    <Badge className="ml-2 border-primary/30 bg-primary/20 text-primary">
+                                                                        Selected
+                                                                    </Badge>
                                                                 )}
                                                             </div>
                                                         ))
@@ -416,7 +403,7 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                             <Button
                                                 onClick={() => handleImportBoard(selectedBoard)}
                                                 disabled={!selectedListId || importingBoard === selectedBoard.id}
-                                                className="border-primary p-4 bg-primary text-primary-foreground hover:bg-primary/90"
+                                                className="border-primary bg-primary p-4 text-primary-foreground hover:bg-primary/90"
                                                 variant="default"
                                                 size="sm"
                                             >
@@ -441,5 +428,5 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                 </div>
             </div>
         </MasterLayout>
-    );
+    )
 }

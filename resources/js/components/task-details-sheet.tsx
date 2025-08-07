@@ -20,6 +20,21 @@ type Tag = {
     color: string
 }
 
+type TaskMeta = {
+    id?: number
+    task_id: number
+    source?: string | null
+    source_id?: string | null
+    source_number?: string | null
+    source_url?: string | null
+    source_state?: string | null
+    extra_data?: {
+        list_name?: string
+        list_id?: string
+        [key: string]: any
+    } | null
+}
+
 type Task = {
     id: number
     project_id: number
@@ -32,6 +47,8 @@ type Task = {
     assignees: User[]
     tags?: Tag[]
     created_at?: string
+    meta?: TaskMeta
+    is_imported?: boolean
 }
 
 type TaskDetailsSheetProps = {
@@ -173,6 +190,58 @@ export default function TaskDetailsSheet({ task, open, onOpenChange }: TaskDetai
                                         </span>
                                     ))}
                                 </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Trello Information */}
+                    {task.is_imported && task.meta && task.meta.source === 'trello' && (
+                        <div className="space-y-2">
+                            <h3 className="ml-4 flex items-center gap-2 text-lg font-semibold text-primary">
+                                <svg className="h-5 w-5 text-[#0079BF]" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M5 3C3.89 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3H5M6 6H10V15H6V6M11 6H15V10H11V6M11 11H15V18H11V11M6 16H10V18H6V16Z" />
+                                </svg>
+                                Trello Information
+                            </h3>
+                            <div className="grid grid-cols-1 gap-4 rounded-lg border bg-muted/40 p-4">
+                                {task.meta.extra_data?.list_name && (
+                                    <div>
+                                        <p className="text-sm font-bold text-muted-foreground">List Name</p>
+                                        <Badge className="mt-1 border-[#0079BF]/30 bg-[#0079BF]/20 text-[#0079BF]">
+                                            {task.meta.extra_data.list_name}
+                                        </Badge>
+                                    </div>
+                                )}
+                                {task.meta.source_url && (
+                                    <div>
+                                        <p className="text-sm font-bold text-muted-foreground">Trello Card</p>
+                                        <a
+                                            href={task.meta.source_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="mt-1 inline-flex items-center gap-1 text-sm text-[#0079BF] hover:underline"
+                                        >
+                                            View in Trello
+                                            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z" />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                )}
+                                {task.meta.source_state && (
+                                    <div>
+                                        <p className="text-sm font-bold text-muted-foreground">State in Trello</p>
+                                        <Badge
+                                            className={
+                                                task.meta.source_state === 'archived'
+                                                    ? 'border-amber-200 bg-amber-100 text-amber-700'
+                                                    : 'border-green-200 bg-green-100 text-green-700'
+                                            }
+                                        >
+                                            {task.meta.source_state === 'archived' ? 'Archived' : 'Active'}
+                                        </Badge>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

@@ -2,7 +2,7 @@ import AdminLayout from '@/layouts/admin-layout'
 import { Head, Link } from '@inertiajs/react'
 
 interface DashboardProps {
-    userCount: number;
+    userCount: number
 }
 
 export default function Dashboard({ userCount }: DashboardProps) {
