@@ -21,14 +21,6 @@ final class TrelloBoardController extends Controller
     public function __construct(private readonly TrelloAdapter $trelloAdapter) {}
 
     /**
-     * Display the Trello boards page.
-     */
-    public function index(): Response
-    {
-        return Inertia::render('trello/boards');
-    }
-
-    /**
      * Get all boards for the authenticated user.
      */
     public function getBoards(): Response
@@ -48,6 +40,10 @@ final class TrelloBoardController extends Controller
             } else {
                 $boards = $this->trelloAdapter->getBoards($user->trello_token, $key);
             }
+        }
+
+        foreach ($boards as $key => $board) {
+            $boards[$key]['is_imported'] = Project::query()->where('repo_id', $board['id'])->exists();
         }
 
         return Inertia::render('trello/boards', [
@@ -77,29 +73,6 @@ final class TrelloBoardController extends Controller
         $lists = $this->trelloAdapter->getBoardLists($user->trello_token, $key, $boardId);
 
         return response()->json($lists);
-    }
-
-    /**
-     * Get all cards for a specific list.
-     */
-    public function getListCards(string $listId): JsonResponse
-    {
-        $user = Auth::user();
-
-        if (! $user->trello_token) {
-            return response()->json(['error' => 'No Trello authentication found.'], 401);
-        }
-
-        // Get the Trello API key from config or env directly with fallback
-        $key = config('services.trello.client_id');
-
-        if (! $key) {
-            return response()->json(['error' => 'Trello API key not configured.'], 500);
-        }
-
-        $cards = $this->trelloAdapter->getListCards($user->trello_token, $key, $listId);
-
-        return response()->json($cards);
     }
 
     /**

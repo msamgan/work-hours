@@ -22,10 +22,6 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('/trello/boards/{boardId}/lists', [TrelloBoardController::class, 'getBoardLists'])
         ->name('trello.board.lists');
 
-    // Get cards from a list
-    Route::get('/trello/lists/{listId}/cards', [TrelloBoardController::class, 'getListCards'])
-        ->name('trello.list.cards');
-
     // Import a board as a project
     Route::post('/trello/boards/import', [TrelloBoardController::class, 'importBoard'])
         ->name('trello.board.import');
