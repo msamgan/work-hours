@@ -58,7 +58,7 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
     const fetchBoardLists = async (boardId: string) => {
         try {
             setFetchingLists(true)
-            const response = await axios.get(route('trello.boards.lists', { boardId }))
+            const response = await axios.get(route('trello.board.lists', { boardId }))
 
             const updatedBoards = boards.map(board => {
                 if (board.id === boardId) {
@@ -91,7 +91,7 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
 
         try {
             setImportingBoard(board.id)
-            const response = await axios.post(route('trello.boards.import'), {
+            const response = await axios.post(route('trello.board.import'), {
                 board_id: board.id,
                 board_name: board.name,
                 default_list_id: selectedListId,
@@ -220,7 +220,7 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                             ) : (
                                                 <>
                                                     <Download className="mr-1 h-4 w-4" />
-                                                    Import
+                                                    Select Lists
                                                 </>
                                             )}
                                         </Button>
@@ -246,57 +246,6 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                     )}
                                 </div>
                             </div>
-
-                            {selectedBoard?.id === board.id && board.lists && (
-                                <>
-                                    <Separator className="my-3" />
-                                    <div className="mt-2">
-                                        <h4 className="mb-2 text-sm font-medium">Select Default List</h4>
-                                        {fetchingLists ? (
-                                            <div className="flex justify-center py-4">
-                                                <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                                            </div>
-                                        ) : (
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {board.lists.map(list => (
-                                                    <div
-                                                        key={list.id}
-                                                        onClick={() => setSelectedListId(list.id)}
-                                                        className={cn(
-                                                            "cursor-pointer rounded-md border p-2 text-sm transition-colors hover:bg-muted",
-                                                            selectedListId === list.id && "bg-primary/10 border-primary/50"
-                                                        )}
-                                                    >
-                                                        {list.name}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-
-                                        <div className="mt-3 flex justify-end">
-                                            <Button
-                                                onClick={() => handleImportBoard(board)}
-                                                disabled={!selectedListId || importingBoard === board.id}
-                                                className="border-primary p-4 bg-primary text-primary-foreground hover:bg-primary/90"
-                                                variant="default"
-                                                size="sm"
-                                            >
-                                                {importingBoard === board.id ? (
-                                                    <>
-                                                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                                                        Importing...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Download className="mr-1 h-4 w-4" />
-                                                        Import Board
-                                                    </>
-                                                )}
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
                         </div>
                     ))}
                 </div>
@@ -407,6 +356,87 @@ export default function TrelloBoards({ boards: initialBoards = [], error: initia
                                 {renderBoardsList()}
                             </CardContent>
                         </Card>
+                    </div>
+
+                    <div className="hidden flex-1 md:block">
+                        {selectedBoard && (
+                            <Card className="border-primary/10">
+                                <CardHeader>
+                                    <CardTitle className="text-xl">
+                                        <Trello className="mr-2 h-5 w-5 inline-block align-middle" />
+                                        Board Details
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="flex flex-col">
+                                        <div className="mb-4">
+                                            <h4 className="text-sm font-medium text-muted-foreground">Board Name</h4>
+                                            <p className="text-lg font-semibold">{selectedBoard.name}</p>
+                                        </div>
+
+                                        {selectedBoard.desc && (
+                                            <div className="mb-4">
+                                                <h4 className="text-sm font-medium text-muted-foreground">Description</h4>
+                                                <p className="text-sm text-muted-foreground">{selectedBoard.desc}</p>
+                                            </div>
+                                        )}
+
+                                        <div className="mb-4">
+                                            <h4 className="text-sm font-medium text-muted-foreground">Lists</h4>
+                                            {fetchingLists ? (
+                                                <div className="flex justify-center py-4">
+                                                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-2">
+                                                    {selectedBoard.lists && selectedBoard.lists.length > 0 ? (
+                                                        selectedBoard.lists.map(list => (
+                                                            <div
+                                                                key={list.id}
+                                                                onClick={() => setSelectedListId(list.id)}
+                                                                className={cn(
+                                                                    "cursor-pointer rounded-md border p-3 text-sm transition-colors hover:bg-muted",
+                                                                    selectedListId === list.id && "bg-primary/10 border-primary/50"
+                                                                )}
+                                                            >
+                                                                {list.name}
+                                                                {selectedListId === list.id && (
+                                                                    <Badge className="ml-2 bg-primary/20 text-primary border-primary/30">Selected</Badge>
+                                                                )}
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <p className="text-sm text-muted-foreground">No lists found for this board.</p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex justify-end">
+                                            <Button
+                                                onClick={() => handleImportBoard(selectedBoard)}
+                                                disabled={!selectedListId || importingBoard === selectedBoard.id}
+                                                className="border-primary p-4 bg-primary text-primary-foreground hover:bg-primary/90"
+                                                variant="default"
+                                                size="sm"
+                                            >
+                                                {importingBoard === selectedBoard.id ? (
+                                                    <>
+                                                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                                                        Importing...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Download className="mr-1 h-4 w-4" />
+                                                        Import Board
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
                     </div>
                 </div>
             </div>
