@@ -29,8 +29,4 @@ Route::middleware(['auth'])->group(function (): void {
     // Import a board as a project
     Route::post('/trello/boards/import', [TrelloBoardController::class, 'importBoard'])
         ->name('trello.board.import');
-
-    // Import cards from a list as tasks for a project
-    Route::post('/trello/projects/{projectId}/import-cards', [TrelloBoardController::class, 'importListCards'])
-        ->name('trello.cards.import');
 });
