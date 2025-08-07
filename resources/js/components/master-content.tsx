@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { type BreadcrumbItem } from '@/types'
 import { all } from '@actions/NotificationsController'
 import { Link } from '@inertiajs/react'
-import { Bell, ChevronRight, Home } from 'lucide-react'
+import { Bell, ChevronRight, Home, Settings } from 'lucide-react'
 import { type Dispatch, type ReactNode, type SetStateAction, useEffect, useState } from 'react'
 
 interface MasterContentProps {
@@ -17,6 +17,7 @@ interface MasterContentProps {
 
 export function MasterContent({ children, breadcrumbs = [], collapsed, setCollapsed }: MasterContentProps) {
     const [unreadCount, setUnreadCount] = useState(0)
+    const [isAdmin, setIsAdmin] = useState(false)
 
     // Fetch unread notification count when the component mounts
     useEffect(() => {
@@ -24,6 +25,11 @@ export function MasterContent({ children, breadcrumbs = [], collapsed, setCollap
             try {
                 const response = await all.data({ page: 1 })
                 setUnreadCount(response.unread_count)
+
+                // Check if user is admin (this data will be passed from the backend)
+                if (response.user && response.user.is_admin) {
+                    setIsAdmin(true)
+                }
             } catch (error) {
                 console.error('Failed to fetch unread notifications count', error)
             }
@@ -142,6 +148,17 @@ export function MasterContent({ children, breadcrumbs = [], collapsed, setCollap
                                 <line x1="3" y1="10" x2="21" y2="10"></line>
                             </svg>
                         </Link>
+
+                        {/* Admin Dashboard Link (Only visible for admins) */}
+                        {isAdmin && (
+                            <Link
+                                href="/administration"
+                                className="relative flex items-center rounded-md p-1.5 text-gray-600 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
+                                aria-label="Admin Dashboard"
+                            >
+                                <Settings className="h-5 w-5" />
+                            </Link>
+                        )}
 
                         {/* Notification Link */}
                         <Link

@@ -16,8 +16,8 @@ final class ClientIdFilter
      */
     public function handle($builder, Closure $next)
     {
-        if (request()->has('client_id') && request('client_id') !== '') {
-            $builder->where('client_id', request('client_id'));
+        if (request()->has('client') && request('client') !== '') {
+            $builder->where('client_id', request('client'));
         }
 
         return $next($builder);

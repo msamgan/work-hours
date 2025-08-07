@@ -83,6 +83,14 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Check if the user is an admin.
+     */
+    public function isAdmin(): bool
+    {
+        return in_array($this->id, config('app.admin_ids', []));
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

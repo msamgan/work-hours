@@ -16,8 +16,15 @@ final class StatusFilter
      */
     public function handle($builder, Closure $next)
     {
-        if (request()->has('status') && request('status') !== 'all') {
-            $builder->where('status', request('status'));
+        if (request()->has('status')) {
+            $status = request('status');
+            if ($status === 'incomplete') {
+                $builder->where('status', '!=', 'completed');
+            } elseif ($status !== 'all') {
+                $builder->where('status', $status);
+            }
+        } else {
+            $builder->where('status', '!=', 'completed');
         }
 
         return $next($builder);

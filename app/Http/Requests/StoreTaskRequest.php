@@ -33,6 +33,8 @@ final class StoreTaskRequest extends FormRequest
             'assignees' => ['nullable', 'array'],
             'assignees.*' => ['integer', 'exists:users,id'],
             'create_github_issue' => ['nullable', 'boolean'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['string', 'max:255'],
         ];
     }
 }

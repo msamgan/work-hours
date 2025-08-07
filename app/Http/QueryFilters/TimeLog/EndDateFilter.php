@@ -18,8 +18,8 @@ final class EndDateFilter
     {
         $builder = $next($request);
 
-        if (request()->get('end_date')) {
-            $builder->whereDate('start_timestamp', '<=', request('end_date'));
+        if (request()->get('end-date')) {
+            $builder->whereDate('start_timestamp', '<=', request('end-date'));
         }
 
         return $builder;

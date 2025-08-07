@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateTeamMemberRequest;
 use App\Http\Stores\ProjectStore;
 use App\Http\Stores\TeamStore;
 use App\Http\Stores\TimeLogStore;
+use App\Models\Tag;
 use App\Models\Team;
 use App\Models\TimeLog;
 use App\Models\User;
@@ -54,6 +55,7 @@ final class TeamController extends Controller
             ->map(function ($team): array {
                 $timeLogs = TimeLogStore::timeLogs(baseQuery: TimeLog::query()->where('user_id', $team->member->getkey()));
                 $mappedTimeLogs = TimeLogStore::timeLogMapper($timeLogs);
+
                 // Only include approved logs in calculations
                 $approvedLogs = $mappedTimeLogs->where('status', TimeLogStatus::APPROVED);
                 $totalDuration = round($approvedLogs->sum('duration'), 2);
@@ -78,8 +80,8 @@ final class TeamController extends Controller
         return Inertia::render('team/index', [
             'teamMembers' => $teamMembers,
             'filters' => [
-                'start_date' => request('start_date', ''),
-                'end_date' => request('end_date', ''),
+                'start-date' => request('start-date', ''),
+                'end-date' => request('end-date', ''),
                 'search' => request('search', ''),
             ],
         ]);
@@ -237,13 +239,21 @@ final class TeamController extends Controller
         }
     }
 
+    /**
+     * Display the all-time logs page.
+     *
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function allTimeLogs()
     {
         $timeLogs = TimeLogStore::timeLogs(baseQuery: $this->baseTimeLogQuery());
         $teamMembersList = TeamStore::teamMembers(userId: auth()->id());
+        $tags = Tag::query()->where('user_id', auth()->id())->get();
 
         return Inertia::render('team/all-time-logs', [
             'teamMembers' => $teamMembersList,
+            'tags' => $tags,
             ...TimeLogStore::resData(timeLogs: $timeLogs),
         ]);
     }

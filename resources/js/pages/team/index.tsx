@@ -35,8 +35,8 @@ type TeamMember = {
 }
 
 type Filters = {
-    start_date: string
-    end_date: string
+    'start-date': string
+    'end-date': string
     search: string
 }
 
@@ -47,27 +47,27 @@ type Props = {
 
 export default function Team({ teamMembers, filters }: Props) {
     const { data, setData, get, processing } = useForm<Filters>({
-        start_date: filters.start_date || '',
-        end_date: filters.end_date || '',
+        'start-date': filters['start-date'] || '',
+        'end-date': filters['end-date'] || '',
         search: filters.search || '',
     })
 
-    const startDate = data.start_date ? new Date(data.start_date) : null
-    const endDate = data.end_date ? new Date(data.end_date) : null
+    const startDate = data['start-date'] ? new Date(data['start-date']) : null
+    const endDate = data['end-date'] ? new Date(data['end-date']) : null
 
     const handleStartDateChange = (date: Date | null) => {
         if (date) {
-            setData('start_date', date.toISOString().split('T')[0])
+            setData('start-date', date.toISOString().split('T')[0])
         } else {
-            setData('start_date', '')
+            setData('start-date', '')
         }
     }
 
     const handleEndDateChange = (date: Date | null) => {
         if (date) {
-            setData('end_date', date.toISOString().split('T')[0])
+            setData('end-date', date.toISOString().split('T')[0])
         } else {
-            setData('end_date', '')
+            setData('end-date', '')
         }
     }
 
@@ -105,17 +105,17 @@ export default function Team({ teamMembers, filters }: Props) {
                                 <CardTitle className="text-xl">Team Members</CardTitle>
                                 <CardDescription>You have {teamMembers.length} team members</CardDescription>
 
-                                {(data.start_date || data.end_date || data.search) && (
+                                {(data['start-date'] || data['end-date'] || data.search) && (
                                     <CardDescription className="mt-1">
                                         {(() => {
                                             let description = ''
 
-                                            if (data.start_date && data.end_date) {
-                                                description = `Showing team data from ${data.start_date} to ${data.end_date}`
-                                            } else if (data.start_date) {
-                                                description = `Showing team data from ${data.start_date}`
-                                            } else if (data.end_date) {
-                                                description = `Showing team data until ${data.end_date}`
+                                            if (data['start-date'] && data['end-date']) {
+                                                description = `Showing team data from ${data['start-date']} to ${data['end-date']}`
+                                            } else if (data['start-date']) {
+                                                description = `Showing team data from ${data['start-date']}`
+                                            } else if (data['end-date']) {
+                                                description = `Showing team data until ${data['end-date']}`
                                             }
 
                                             if (data.search) {
@@ -163,7 +163,7 @@ export default function Team({ teamMembers, filters }: Props) {
                                     </div>
                                 </div>
                                 <div className="flex w-full flex-col gap-1">
-                                    <Label htmlFor="start_date" className="text-xs font-medium">
+                                    <Label htmlFor="start-date" className="text-xs font-medium">
                                         Start Date
                                     </Label>
                                     <DatePicker
@@ -174,7 +174,7 @@ export default function Team({ teamMembers, filters }: Props) {
                                         disabled={processing}
                                         customInput={
                                             <CustomInput
-                                                id="start_date"
+                                                id="start-date"
                                                 icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
                                                 disabled={processing}
                                                 placeholder="Select start date"
@@ -183,7 +183,7 @@ export default function Team({ teamMembers, filters }: Props) {
                                     />
                                 </div>
                                 <div className="flex w-full flex-col gap-1">
-                                    <Label htmlFor="end_date" className="text-xs font-medium">
+                                    <Label htmlFor="end-date" className="text-xs font-medium">
                                         End Date
                                     </Label>
                                     <DatePicker
@@ -194,7 +194,7 @@ export default function Team({ teamMembers, filters }: Props) {
                                         disabled={processing}
                                         customInput={
                                             <CustomInput
-                                                id="end_date"
+                                                id="end-date"
                                                 icon={<CalendarRange className="h-4 w-4 text-muted-foreground" />}
                                                 disabled={processing}
                                                 placeholder="Select end date"
@@ -215,11 +215,11 @@ export default function Team({ teamMembers, filters }: Props) {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        disabled={processing || (!data.start_date && !data.end_date && !data.search)}
+                                        disabled={processing || (!data['start-date'] && !data['end-date'] && !data.search)}
                                         onClick={() => {
                                             setData({
-                                                start_date: '',
-                                                end_date: '',
+                                                'start-date': '',
+                                                'end-date': '',
                                                 search: '',
                                             })
                                             get(route('team.index'), {

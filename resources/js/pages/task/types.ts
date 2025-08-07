@@ -14,6 +14,12 @@ export type Project = {
     user_id: number
 }
 
+export type Tag = {
+    id: number
+    name: string
+    color: string
+}
+
 export type Task = {
     id: number
     project_id: number
@@ -25,6 +31,7 @@ export type Task = {
     is_imported: boolean
     project: Project
     assignees: User[]
+    tags?: Tag[]
     meta?: {
         source?: string
         source_url?: string
@@ -38,10 +45,11 @@ export type Task = {
  * Task filter interface
  */
 export interface TaskFilters {
-    status: string
+    status: 'all' | 'incomplete' | 'pending' | 'in_progress' | 'completed'
     priority: string
-    project_id: string
-    due_date_from: Date | string | ''
-    due_date_to: Date | string | ''
+    project: string
+    tag: string
+    'due-date-from': string | Date | ''
+    'due-date-to': string | Date | ''
     search: string
 }

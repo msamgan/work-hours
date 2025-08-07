@@ -18,8 +18,8 @@ final class ProjectIdFilter
     {
         $builder = $next($request);
 
-        if (request()->get('project_id') && request('project_id')) {
-            $builder->where('project_id', request('project_id'));
+        if (request()->get('project') && request('project')) {
+            $builder->where('project_id', request('project'));
         }
 
         return $builder;

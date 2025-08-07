@@ -1,4 +1,5 @@
 import { SearchableSelect } from '@/components/ui/searchable-select'
+import TagInput from '@/components/ui/tag-input'
 import { potentialAssignees as _potentialAssignees } from '@actions/TaskController'
 import { Head, useForm } from '@inertiajs/react'
 import { ArrowLeft, Calendar, CheckSquare, ClipboardList, FileText, LoaderCircle, Plus, Text } from 'lucide-react'
@@ -34,6 +35,7 @@ type TaskForm = {
     due_date: string
     assignees: number[]
     create_github_issue: boolean
+    tags: string[]
 }
 
 type Props = {
@@ -61,6 +63,7 @@ export default function CreateTask({ projects }: Props) {
         due_date: '',
         assignees: [],
         create_github_issue: false,
+        tags: [],
     })
 
     // State to store potential assignees
@@ -357,6 +360,14 @@ export default function CreateTask({ projects }: Props) {
                                         </div>
                                     </div>
                                     <InputError message={errors.assignees} />
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label className="text-sm font-medium">
+                                        Tags <span className="text-xs text-muted-foreground">(optional)</span>
+                                    </Label>
+                                    <TagInput value={data.tags} onChange={(tags) => setData('tags', tags)} placeholder="Add tags (optional)" />
+                                    <InputError message={errors.tags} />
                                 </div>
 
                                 {isGithubProject && (

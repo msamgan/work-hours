@@ -48,7 +48,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 ]
 
 export default function Tasks() {
-    const { auth, projects } = usePage<SharedData & { projects: { id: number; name: string }[] }>().props
+    const { auth, projects, tags } = usePage<
+        SharedData & {
+            projects: { id: number; name: string }[]
+            tags: { id: number; name: string; color: string }[]
+        }
+    >().props
     const [tasks, setTasks] = useState<Task[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
@@ -65,9 +70,10 @@ export default function Tasks() {
     const [filters, setFilters] = useState<TaskFilters>({
         status: 'all',
         priority: 'all',
-        project_id: 'all',
-        due_date_from: '',
-        due_date_to: '',
+        project: 'all',
+        tag: 'all',
+        'due-date-from': '',
+        'due-date-to': '',
         search: '',
     })
     const [processing, setProcessing] = useState(false)
@@ -164,11 +170,12 @@ export default function Tasks() {
 
     const clearFilters = (): void => {
         setFilters({
-            status: 'all',
+            status: 'incomplete',
             priority: 'all',
-            project_id: 'all',
-            due_date_from: '',
-            due_date_to: '',
+            project: 'all',
+            tag: 'all',
+            'due-date-from': '',
+            'due-date-to': '',
             search: '',
         })
     }
@@ -249,18 +256,18 @@ export default function Tasks() {
         e.preventDefault()
         const formattedFilters = { ...filters }
 
-        if (formattedFilters.due_date_from instanceof Date) {
-            const year = formattedFilters.due_date_from.getFullYear()
-            const month = String(formattedFilters.due_date_from.getMonth() + 1).padStart(2, '0')
-            const day = String(formattedFilters.due_date_from.getDate()).padStart(2, '0')
-            formattedFilters.due_date_from = `${year}-${month}-${day}`
+        if (formattedFilters['due-date-from'] instanceof Date) {
+            const year = formattedFilters['due-date-from'].getFullYear()
+            const month = String(formattedFilters['due-date-from'].getMonth() + 1).padStart(2, '0')
+            const day = String(formattedFilters['due-date-from'].getDate()).padStart(2, '0')
+            formattedFilters['due-date-from'] = `${year}-${month}-${day}`
         }
 
-        if (formattedFilters.due_date_to instanceof Date) {
-            const year = formattedFilters.due_date_to.getFullYear()
-            const month = String(formattedFilters.due_date_to.getMonth() + 1).padStart(2, '0')
-            const day = String(formattedFilters.due_date_to.getDate()).padStart(2, '0')
-            formattedFilters.due_date_to = `${year}-${month}-${day}`
+        if (formattedFilters['due-date-to'] instanceof Date) {
+            const year = formattedFilters['due-date-to'].getFullYear()
+            const month = String(formattedFilters['due-date-to'].getMonth() + 1).padStart(2, '0')
+            const day = String(formattedFilters['due-date-to'].getDate()).padStart(2, '0')
+            formattedFilters['due-date-to'] = `${year}-${month}-${day}`
         }
 
         const filtersString = objectToQueryString(formattedFilters)
@@ -278,11 +285,12 @@ export default function Tasks() {
         const queryParams = queryStringToObject()
 
         const initialFilters: TaskFilters = {
-            status: queryParams.status || 'all',
+            status: (queryParams.status as TaskFilters['status']) || 'incomplete',
             priority: queryParams.priority || 'all',
-            project_id: queryParams.project_id || 'all',
-            due_date_from: queryParams.due_date_from || '',
-            due_date_to: queryParams.due_date_to || '',
+            project: queryParams.project || 'all',
+            tag: queryParams.tag || 'all',
+            'due-date-from': queryParams['due-date-from'] || '',
+            'due-date-to': queryParams['due-date-to'] || '',
             search: queryParams.search || '',
         }
 
@@ -354,12 +362,13 @@ export default function Tasks() {
                                         value={filters.status}
                                         onChange={(value) => handleFilterChange('status', value)}
                                         options={[
-                                            { id: 'all', name: 'All Statuses' },
+                                            { id: 'all', name: 'Statuses' },
+                                            { id: 'incomplete', name: 'Incomplete' },
                                             { id: 'pending', name: 'Pending' },
                                             { id: 'in_progress', name: 'In Progress' },
                                             { id: 'completed', name: 'Completed' },
                                         ]}
-                                        placeholder="All Statuses"
+                                        placeholder="Statuses"
                                         disabled={processing}
                                         icon={<AlertCircle className="h-4 w-4 text-muted-foreground" />}
                                     />
@@ -375,12 +384,12 @@ export default function Tasks() {
                                         value={filters.priority}
                                         onChange={(value) => handleFilterChange('priority', value)}
                                         options={[
-                                            { id: 'all', name: 'All Priorities' },
+                                            { id: 'all', name: 'Priorities' },
                                             { id: 'low', name: 'Low' },
                                             { id: 'medium', name: 'Medium' },
                                             { id: 'high', name: 'High' },
                                         ]}
-                                        placeholder="All Priorities"
+                                        placeholder="Priorities"
                                         disabled={processing}
                                         icon={<Flag className="h-4 w-4 text-muted-foreground" />}
                                     />
@@ -393,18 +402,40 @@ export default function Tasks() {
                                     </Label>
                                     <SearchableSelect
                                         id="project"
-                                        value={filters.project_id}
-                                        onChange={(value) => handleFilterChange('project_id', value)}
+                                        value={filters.project}
+                                        onChange={(value) => handleFilterChange('project', value)}
                                         options={[
-                                            { id: 'all', name: 'All Projects' },
+                                            { id: 'all', name: 'Projects' },
                                             ...projects.map((project) => ({
                                                 id: project.id.toString(),
                                                 name: project.name,
                                             })),
                                         ]}
-                                        placeholder="All Projects"
+                                        placeholder="Projects"
                                         disabled={processing}
                                         icon={<Briefcase className="h-4 w-4 text-muted-foreground" />}
+                                    />
+                                </div>
+
+                                {/* Tag Filter */}
+                                <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-1">
+                                    <Label htmlFor="tag" className="text-xs font-medium">
+                                        Tag
+                                    </Label>
+                                    <SearchableSelect
+                                        id="tag"
+                                        value={filters.tag}
+                                        onChange={(value) => handleFilterChange('tag', value)}
+                                        options={[
+                                            { id: 'all', name: 'Tags' },
+                                            ...tags.map((tag) => ({
+                                                id: tag.id.toString(),
+                                                name: tag.name,
+                                            })),
+                                        ]}
+                                        placeholder="Tags"
+                                        disabled={processing}
+                                        icon={<Flag className="h-4 w-4 text-muted-foreground" />}
                                     />
                                 </div>
 
@@ -414,8 +445,8 @@ export default function Tasks() {
                                         Due Date From
                                     </Label>
                                     <DatePicker
-                                        selected={parseDate(filters.due_date_from)}
-                                        onChange={(date) => handleFilterChange('due_date_from', date)}
+                                        selected={parseDate(filters['due-date-from'])}
+                                        onChange={(date) => handleFilterChange('due-date-from', date)}
                                         dateFormat="yyyy-MM-dd"
                                         isClearable
                                         disabled={processing}
@@ -436,8 +467,8 @@ export default function Tasks() {
                                         Due Date To
                                     </Label>
                                     <DatePicker
-                                        selected={parseDate(filters.due_date_to)}
-                                        onChange={(date) => handleFilterChange('due_date_to', date)}
+                                        selected={parseDate(filters['due-date-to'])}
+                                        onChange={(date) => handleFilterChange('due-date-to', date)}
                                         dateFormat="yyyy-MM-dd"
                                         isClearable
                                         disabled={processing}
@@ -465,9 +496,10 @@ export default function Tasks() {
                                         disabled={
                                             filters.status === 'all' &&
                                             filters.priority === 'all' &&
-                                            filters.project_id === 'all' &&
-                                            !filters.due_date_from &&
-                                            !filters.due_date_to &&
+                                            filters.project === 'all' &&
+                                            filters.tag === 'all' &&
+                                            !filters['due-date-from'] &&
+                                            !filters['due-date-to'] &&
                                             !filters.search
                                         }
                                         onClick={clearFilters}
@@ -483,20 +515,21 @@ export default function Tasks() {
                             <div className={'mt-4 text-sm text-muted-foreground'}>
                                 {(filters.status !== 'all' ||
                                     filters.priority !== 'all' ||
-                                    filters.project_id !== 'all' ||
-                                    filters.due_date_from ||
-                                    filters.due_date_to ||
+                                    filters.project !== 'all' ||
+                                    filters.tag !== 'all' ||
+                                    filters['due-date-from'] ||
+                                    filters['due-date-to'] ||
                                     filters.search) && (
                                     <CardDescription>
                                         {(() => {
                                             let description = ''
 
-                                            if (filters.due_date_from && filters.due_date_to) {
-                                                description = `Showing tasks from ${formatDateValue(filters.due_date_from)} to ${formatDateValue(filters.due_date_to)}`
-                                            } else if (filters.due_date_from) {
-                                                description = `Showing tasks from ${formatDateValue(filters.due_date_from)}`
-                                            } else if (filters.due_date_to) {
-                                                description = `Showing tasks until ${formatDateValue(filters.due_date_to)}`
+                                            if (filters['due-date-from'] && filters['due-date-to']) {
+                                                description = `Showing tasks from ${formatDateValue(filters['due-date-from'])} to ${formatDateValue(filters['due-date-to'])}`
+                                            } else if (filters['due-date-from']) {
+                                                description = `Showing tasks from ${formatDateValue(filters['due-date-from'])}`
+                                            } else if (filters['due-date-to']) {
+                                                description = `Showing tasks until ${formatDateValue(filters['due-date-to'])}`
                                             }
 
                                             if (filters.status !== 'all') {
@@ -515,13 +548,24 @@ export default function Tasks() {
                                                 }
                                             }
 
-                                            if (filters.project_id !== 'all') {
-                                                const project = projects.find((p) => p.id.toString() === filters.project_id)
+                                            if (filters.project !== 'all') {
+                                                const project = projects.find((p) => p.id.toString() === filters.project)
                                                 if (project) {
                                                     if (description) {
                                                         description += ` in project "${project.name}"`
                                                     } else {
                                                         description = `Showing tasks in project "${project.name}"`
+                                                    }
+                                                }
+                                            }
+
+                                            if (filters.tag !== 'all') {
+                                                const tag = tags.find((t) => t.id.toString() === filters.tag)
+                                                if (tag) {
+                                                    if (description) {
+                                                        description += ` with tag "${tag.name}"`
+                                                    } else {
+                                                        description = `Showing tasks with tag "${tag.name}"`
                                                     }
                                                 }
                                             }
@@ -580,7 +624,22 @@ export default function Tasks() {
                                                     <span>{task.title}</span>
                                                     {task.is_imported && <GithubIcon className="h-3 w-3 text-purple-600 dark:text-purple-400" />}
                                                 </div>
-                                                <small>{task.project.name}</small>
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <small>{task.project.name}</small>
+                                                    {task.tags && task.tags.length > 0 && (
+                                                        <div className="mt-1 flex flex-wrap gap-1">
+                                                            {task.tags.map((tag) => (
+                                                                <Badge
+                                                                    key={tag.id}
+                                                                    className="text-xs"
+                                                                    style={{ backgroundColor: tag.color, color: '#fff' }}
+                                                                >
+                                                                    {tag.name}
+                                                                </Badge>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </TableCell>
                                             <TableCell>{getStatusBadge(task, task.status)}</TableCell>
                                             <TableCell>{getPriorityBadge(task.priority)}</TableCell>

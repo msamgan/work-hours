@@ -35,8 +35,8 @@ final class ClientController extends Controller
             'clients' => $clients,
             'filters' => [
                 'search' => request('search', ''),
-                'created_date_from' => request('created_date_from', ''),
-                'created_date_to' => request('created_date_to', ''),
+                'created-date-from' => request('created-date-from', ''),
+                'created-date-to' => request('created-date-to', ''),
             ],
         ]);
     }

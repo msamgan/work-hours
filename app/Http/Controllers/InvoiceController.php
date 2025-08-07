@@ -39,10 +39,10 @@ final class InvoiceController extends Controller
         return Inertia::render('invoice/index', [
             'filters' => [
                 'search' => request('search', ''),
-                'client_id' => request('client_id', ''),
+                'client' => request('client', ''),
                 'status' => request('status', ''),
-                'created_date_from' => request('created_date_from', ''),
-                'created_date_to' => request('created_date_to', ''),
+                'created-date-from' => request('created-date-from', ''),
+                'created-date-to' => request('created-date-to', ''),
             ],
             'clients' => $clients,
         ]);

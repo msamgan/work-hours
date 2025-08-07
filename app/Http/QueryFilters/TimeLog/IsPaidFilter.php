@@ -18,8 +18,8 @@ final class IsPaidFilter
     {
         $builder = $next($request);
 
-        if (request()->get('is_paid') && request('is_paid') !== '') {
-            $isPaid = request('is_paid') === 'true' || request('is_paid') === '1';
+        if (request()->get('is-paid') && request('is-paid') !== '') {
+            $isPaid = request('is-paid') === 'true' || request('is-paid') === '1';
             $builder->where('is_paid', $isPaid);
         }
 

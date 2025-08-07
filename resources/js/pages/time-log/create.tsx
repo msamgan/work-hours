@@ -12,6 +12,7 @@ import CustomInput from '@/components/ui/custom-input'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SearchableSelect } from '@/components/ui/searchable-select'
+import TagInput from '@/components/ui/tag-input'
 import MasterLayout from '@/layouts/master-layout'
 import { type BreadcrumbItem } from '@/types'
 
@@ -28,6 +29,7 @@ type TimeLogForm = {
     note: string
     mark_task_complete: boolean
     close_github_issue: boolean
+    tags?: string[] // Add tags to the form type
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -66,6 +68,7 @@ export default function CreateTimeLog({ projects, tasks }: Props) {
         note: '',
         mark_task_complete: false,
         close_github_issue: false,
+        tags: [],
     })
 
     // Convert string timestamps to Date objects for DatePicker
@@ -355,19 +358,28 @@ export default function CreateTimeLog({ projects, tasks }: Props) {
                                     <InputError message={errors.note} className="mt-1" />
                                 </div>
 
+                                {/* Tags input */}
+                                <div className="grid gap-2">
+                                    <Label htmlFor="tags" className="text-sm font-medium">
+                                        Tags (Optional)
+                                    </Label>
+                                    <TagInput value={data.tags} onChange={(tags) => setData('tags', tags)} placeholder="Add tags for this time log" />
+                                    <InputError message={errors.tags} className="mt-1" />
+                                </div>
+
                                 <div className="mt-4 flex justify-end gap-3">
                                     <Button
                                         type="button"
                                         variant="outline"
                                         onClick={() => window.history.back()}
-                                        tabIndex={5}
+                                        tabIndex={6}
                                         disabled={processing}
                                         className="flex items-center gap-2"
                                     >
                                         <ArrowLeft className="h-4 w-4" />
                                         Back
                                     </Button>
-                                    <Button type="submit" tabIndex={4} disabled={processing} className="flex items-center gap-2">
+                                    <Button type="submit" tabIndex={5} disabled={processing} className="flex items-center gap-2">
                                         {processing ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                                         {processing ? 'Saving...' : 'Save Time Log'}
                                     </Button>

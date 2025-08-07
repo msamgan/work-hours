@@ -27,12 +27,13 @@ type TimeLog = {
 }
 
 type Filters = {
-    start_date: string
-    end_date: string
-    user_id: string
-    project_id: string
-    is_paid: string
+    'start-date': string
+    'end-date': string
+    user: string
+    project: string
+    'is-paid': string
     status: string
+    tag: string
 }
 
 type TeamMember = {
@@ -45,11 +46,17 @@ type Project = {
     name: string
 }
 
+type Tag = {
+    id: number
+    name: string
+}
+
 type Props = {
     timeLogs: TimeLog[]
     filters: Filters
     teamMembers: TeamMember[]
     projects: Project[]
+    tags: Tag[]
     totalDuration: number
     unpaidHours: number
     paidHours: number
@@ -64,6 +71,7 @@ export default function AllTeamTimeLogs({
     filters,
     teamMembers,
     projects,
+    tags,
     totalDuration,
     unpaidHours,
     unpaidAmountsByCurrency,
@@ -110,29 +118,30 @@ export default function AllTeamTimeLogs({
     }
 
     const { data, setData, get, processing } = useForm<Filters>({
-        start_date: filters.start_date || '',
-        end_date: filters.end_date || '',
-        user_id: filters.user_id || '',
-        project_id: filters.project_id || '',
-        is_paid: filters.is_paid || '',
+        'start-date': filters['start-date'] || '',
+        'end-date': filters['end-date'] || '',
+        user: filters.user || '',
+        project: filters.project || '',
+        'is-paid': filters['is-paid'] || '',
         status: filters.status || '',
+        tag: filters.tag || '',
     })
 
-    const startDate = data.start_date ? new Date(data.start_date) : null
-    const endDate = data.end_date ? new Date(data.end_date) : null
+    const startDate = data['start-date'] ? new Date(data['start-date']) : null
+    const endDate = data['end-date'] ? new Date(data['end-date']) : null
     const handleStartDateChange = (date: Date | null) => {
         if (date) {
-            setData('start_date', date.toISOString().split('T')[0])
+            setData('start-date', date.toISOString().split('T')[0])
         } else {
-            setData('start_date', '')
+            setData('start-date', '')
         }
     }
 
     const handleEndDateChange = (date: Date | null) => {
         if (date) {
-            setData('end_date', date.toISOString().split('T')[0])
+            setData('end-date', date.toISOString().split('T')[0])
         } else {
-            setData('end_date', '')
+            setData('end-date', '')
         }
     }
 
@@ -194,23 +203,23 @@ export default function AllTeamTimeLogs({
                                         : 'No time logs found for the selected period'}
                                 </CardDescription>
 
-                                {(data.start_date || data.end_date || data.user_id || data.project_id || data.is_paid || data.status) && (
+                                {(data['start-date'] || data['end-date'] || data.user || data.project || data['is-paid'] || data.status) && (
                                     <CardDescription className="mt-1">
                                         {(() => {
                                             let description = ''
 
                                             // Date range description
-                                            if (data.start_date && data.end_date) {
-                                                description = `Showing logs from ${data.start_date} to ${data.end_date}`
-                                            } else if (data.start_date) {
-                                                description = `Showing logs from ${data.start_date}`
-                                            } else if (data.end_date) {
-                                                description = `Showing logs until ${data.end_date}`
+                                            if (data['start-date'] && data['end-date']) {
+                                                description = `Showing logs from ${data['start-date']} to ${data['end-date']}`
+                                            } else if (data['start-date']) {
+                                                description = `Showing logs from ${data['start-date']}`
+                                            } else if (data['end-date']) {
+                                                description = `Showing logs until ${data['end-date']}`
                                             }
 
                                             // Team member description
-                                            if (data.user_id) {
-                                                const selectedMember = teamMembers.find((member) => member.id.toString() === data.user_id)
+                                            if (data.user) {
+                                                const selectedMember = teamMembers.find((member) => member.id.toString() === data.user)
                                                 const memberName = selectedMember ? selectedMember.name : ''
 
                                                 if (description) {
@@ -221,8 +230,8 @@ export default function AllTeamTimeLogs({
                                             }
 
                                             // Project description
-                                            if (data.project_id) {
-                                                const selectedProject = projects.find((project) => project.id.toString() === data.project_id)
+                                            if (data.project) {
+                                                const selectedProject = projects.find((project) => project.id.toString() === data.project)
                                                 const projectName = selectedProject ? selectedProject.name : ''
 
                                                 if (description) {
@@ -233,8 +242,8 @@ export default function AllTeamTimeLogs({
                                             }
 
                                             // Payment status description
-                                            if (data.is_paid) {
-                                                const paymentStatus = data.is_paid === 'true' ? 'paid' : 'unpaid'
+                                            if (data['is-paid']) {
+                                                const paymentStatus = data['is-paid'] === 'true' ? 'paid' : 'unpaid'
 
                                                 if (description) {
                                                     description += ` (${paymentStatus})`
@@ -274,7 +283,7 @@ export default function AllTeamTimeLogs({
                         <div className="mt-4 border-t pt-4">
                             <form onSubmit={submit} className="flex w-full flex-row flex-wrap gap-4">
                                 <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-1">
-                                    <Label htmlFor="start_date" className="text-xs font-medium">
+                                    <Label htmlFor="start-date" className="text-xs font-medium">
                                         Start Date
                                     </Label>
                                     <DatePicker
@@ -285,7 +294,7 @@ export default function AllTeamTimeLogs({
                                         disabled={processing}
                                         customInput={
                                             <CustomInput
-                                                id="start_date"
+                                                id="start-date"
                                                 icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
                                                 disabled={processing}
                                                 placeholder="Select start date"
@@ -294,7 +303,7 @@ export default function AllTeamTimeLogs({
                                     />
                                 </div>
                                 <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-1">
-                                    <Label htmlFor="end_date" className="text-xs font-medium">
+                                    <Label htmlFor="end-date" className="text-xs font-medium">
                                         End Date
                                     </Label>
                                     <DatePicker
@@ -305,7 +314,7 @@ export default function AllTeamTimeLogs({
                                         disabled={processing}
                                         customInput={
                                             <CustomInput
-                                                id="end_date"
+                                                id="end-date"
                                                 icon={<CalendarRange className="h-4 w-4 text-muted-foreground" />}
                                                 disabled={processing}
                                                 placeholder="Select end date"
@@ -314,42 +323,42 @@ export default function AllTeamTimeLogs({
                                     />
                                 </div>
                                 <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-1">
-                                    <Label htmlFor="user_id" className="text-xs font-medium">
+                                    <Label htmlFor="user" className="text-xs font-medium">
                                         Team Member
                                     </Label>
                                     <SearchableSelect
-                                        id="user_id"
-                                        value={data.user_id}
-                                        onChange={(value) => setData('user_id', value)}
+                                        id="user"
+                                        value={data.user}
+                                        onChange={(value) => setData('user', value)}
                                         options={[{ id: '', name: 'Team' }, ...teamMembers]}
                                         placeholder="Select team member"
                                         disabled={processing}
                                     />
                                 </div>
                                 <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-1">
-                                    <Label htmlFor="project_id" className="text-xs font-medium">
+                                    <Label htmlFor="project" className="text-xs font-medium">
                                         Project
                                     </Label>
                                     <SearchableSelect
-                                        id="project_id"
-                                        value={data.project_id}
-                                        onChange={(value) => setData('project_id', value)}
-                                        options={[{ id: '', name: 'All Projects' }, ...projects]}
+                                        id="project"
+                                        value={data.project}
+                                        onChange={(value) => setData('project', value)}
+                                        options={[{ id: '', name: ' Projects' }, ...projects]}
                                         placeholder="Select project"
                                         disabled={processing}
                                         icon={<Briefcase className="h-4 w-4 text-muted-foreground" />}
                                     />
                                 </div>
                                 <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-1">
-                                    <Label htmlFor="is_paid" className="text-xs font-medium">
+                                    <Label htmlFor="is-paid" className="text-xs font-medium">
                                         Payment Status
                                     </Label>
                                     <SearchableSelect
-                                        id="is_paid"
-                                        value={data.is_paid}
-                                        onChange={(value) => setData('is_paid', value)}
+                                        id="is-paid"
+                                        value={data['is-paid']}
+                                        onChange={(value) => setData('is-paid', value)}
                                         options={[
-                                            { id: '', name: 'All Statuses' },
+                                            { id: '', name: 'Statuses' },
                                             { id: 'true', name: 'Paid' },
                                             { id: 'false', name: 'Unpaid' },
                                         ]}
@@ -367,7 +376,7 @@ export default function AllTeamTimeLogs({
                                         value={data.status}
                                         onChange={(value) => setData('status', value)}
                                         options={[
-                                            { id: '', name: 'All Statuses' },
+                                            { id: '', name: 'Statuses' },
                                             { id: 'pending', name: 'Pending' },
                                             { id: 'approved', name: 'Approved' },
                                             { id: 'rejected', name: 'Rejected' },
@@ -375,6 +384,19 @@ export default function AllTeamTimeLogs({
                                         placeholder="Select approval status"
                                         disabled={processing}
                                         icon={<AlertCircle className="h-4 w-4 text-muted-foreground" />}
+                                    />
+                                </div>
+                                <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-1">
+                                    <Label htmlFor="tag" className="text-xs font-medium">
+                                        Tag
+                                    </Label>
+                                    <SearchableSelect
+                                        id="tag"
+                                        value={data.tag}
+                                        onChange={(value) => setData('tag', value)}
+                                        options={[{ id: '', name: 'Tags' }, ...tags]}
+                                        placeholder="Select tag"
+                                        disabled={processing}
                                     />
                                 </div>
                                 <div className="flex items-end gap-2">
@@ -392,16 +414,22 @@ export default function AllTeamTimeLogs({
                                         variant="outline"
                                         disabled={
                                             processing ||
-                                            (!data.start_date && !data.end_date && !data.user_id && !data.project_id && !data.is_paid && !data.status)
+                                            (!data['start-date'] &&
+                                                !data['end-date'] &&
+                                                !data.user &&
+                                                !data.project &&
+                                                !data['is-paid'] &&
+                                                !data.status)
                                         }
                                         onClick={() => {
                                             setData({
-                                                start_date: '',
-                                                end_date: '',
-                                                user_id: '',
-                                                project_id: '',
-                                                is_paid: '',
+                                                'start-date': '',
+                                                'end-date': '',
+                                                user: '',
+                                                project: '',
+                                                'is-paid': '',
                                                 status: '',
+                                                tag: '',
                                             })
                                             get(route('team.all-time-logs'), {
                                                 preserveState: true,

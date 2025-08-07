@@ -29,6 +29,7 @@ require __DIR__ . '/task.php';
 require __DIR__ . '/timelog.php';
 require __DIR__ . '/invoice.php';
 require __DIR__ . '/calendar.php';
-
 require __DIR__ . '/features.php';
 require __DIR__ . '/legal.php';
+require __DIR__ . '/tags.php';
+require __DIR__ . '/admin.php';

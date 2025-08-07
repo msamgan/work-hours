@@ -1,4 +1,5 @@
 import { SearchableSelect } from '@/components/ui/searchable-select'
+import TagInput from '@/components/ui/tag-input'
 import { potentialAssignees as _potentialAssignees } from '@actions/TaskController'
 import { Head, useForm } from '@inertiajs/react'
 import { ArrowLeft, Calendar, CheckSquare, ClipboardList, FileText, LoaderCircle, Save, Text } from 'lucide-react'
@@ -38,6 +39,7 @@ type TaskForm = {
     due_date: string
     assignees: number[]
     github_update: boolean
+    tags: string[]
 }
 
 type Props = {
@@ -53,6 +55,7 @@ type Props = {
     projects: Project[]
     potentialAssignees: User[]
     assignedUsers: number[]
+    taskTags: string[]
     isGithub: boolean
 }
 
@@ -67,7 +70,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ]
 
-export default function EditTask({ task, projects, potentialAssignees: initialAssignees, assignedUsers, isGithub }: Props) {
+export default function EditTask({ task, projects, potentialAssignees: initialAssignees, assignedUsers, taskTags, isGithub }: Props) {
     const { data, setData, put, processing, errors } = useForm<TaskForm>({
         project_id: task.project_id.toString(),
         title: task.title,
@@ -77,6 +80,7 @@ export default function EditTask({ task, projects, potentialAssignees: initialAs
         due_date: task.due_date || '',
         assignees: assignedUsers || [],
         github_update: true,
+        tags: taskTags || [],
     })
 
     // State for potential assignees
@@ -364,6 +368,18 @@ export default function EditTask({ task, projects, potentialAssignees: initialAs
                                         </div>
                                     </div>
                                     <InputError message={errors.assignees} />
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label className="text-sm font-medium">
+                                        Tags <span className="text-xs text-muted-foreground">(optional)</span>
+                                    </Label>
+                                    <TagInput
+                                        value={data.tags}
+                                        onChange={(tags) => setData('tags', tags)}
+                                        placeholder="Enter tags separated by commas"
+                                    />
+                                    <InputError message={errors.tags} />
                                 </div>
 
                                 {isGithub && (

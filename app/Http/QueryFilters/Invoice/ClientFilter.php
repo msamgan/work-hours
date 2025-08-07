@@ -8,7 +8,7 @@ use Closure;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
-final class ClientIdFilter
+final class ClientFilter
 {
     /**
      * @throws ContainerExceptionInterface
@@ -16,8 +16,8 @@ final class ClientIdFilter
      */
     public function handle($builder, Closure $next)
     {
-        if (request()->has('client_id') && request('client_id') !== '' && request('client_id') !== 'null' && request('client_id') !== null) {
-            $clientId = request('client_id');
+        if (request()->has('client') && request('client') !== '' && request('client') !== 'null' && request('client') !== null) {
+            $clientId = request('client');
             $builder->where('client_id', $clientId);
         }
 

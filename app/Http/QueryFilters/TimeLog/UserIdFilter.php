@@ -18,8 +18,8 @@ final class UserIdFilter
     {
         $builder = $next($request);
 
-        if (request()->get('user_id') && request('user_id')) {
-            $builder->where('user_id', request('user_id'));
+        if (request()->get('user') && request('user')) {
+            $builder->where('user_id', request('user'));
         }
 
         return $builder;

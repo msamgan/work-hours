@@ -16,8 +16,8 @@ final class DueDateFromFilter
      */
     public function handle($builder, Closure $next)
     {
-        if (request()->has('due_date_from') && request('due_date_from')) {
-            $builder->whereDate('due_date', '>=', request('due_date_from'));
+        if (request()->has('due-date-from') && request('due-date-from')) {
+            $builder->whereDate('due_date', '>=', request('due-date-from'));
         }
 
         return $next($builder);

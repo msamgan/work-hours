@@ -36,8 +36,8 @@ type Client = {
 
 type ClientFilters = {
     search: string
-    created_date_from: Date | string | null
-    created_date_to: Date | string | null
+    'created-date-from': Date | string | null
+    'created-date-to': Date | string | null
 }
 
 type Props = {
@@ -62,8 +62,8 @@ export default function Clients() {
     // Filter states
     const [filters, setFilters] = useState<ClientFilters>({
         search: pageFilters?.search || '',
-        created_date_from: pageFilters?.created_date_from || null,
-        created_date_to: pageFilters?.created_date_to || null,
+        'created-date-from': pageFilters?.['created-date-from'] || null,
+        'created-date-to': pageFilters?.['created-date-to'] || null,
     })
 
     const handleFilterChange = (key: keyof ClientFilters, value: string | Date | null): void => {
@@ -73,8 +73,8 @@ export default function Clients() {
     const clearFilters = (): void => {
         setFilters({
             search: '',
-            created_date_from: null,
-            created_date_to: null,
+            'created-date-from': null,
+            'created-date-to': null,
         })
     }
 
@@ -101,18 +101,18 @@ export default function Clients() {
         e.preventDefault()
         const formattedFilters = { ...filters }
 
-        if (formattedFilters.created_date_from instanceof Date) {
-            const year = formattedFilters.created_date_from.getFullYear()
-            const month = String(formattedFilters.created_date_from.getMonth() + 1).padStart(2, '0')
-            const day = String(formattedFilters.created_date_from.getDate()).padStart(2, '0')
-            formattedFilters.created_date_from = `${year}-${month}-${day}`
+        if (formattedFilters['created-date-from'] instanceof Date) {
+            const year = formattedFilters['created-date-from'].getFullYear()
+            const month = String(formattedFilters['created-date-from'].getMonth() + 1).padStart(2, '0')
+            const day = String(formattedFilters['created-date-from'].getDate()).padStart(2, '0')
+            formattedFilters['created-date-from'] = `${year}-${month}-${day}`
         }
 
-        if (formattedFilters.created_date_to instanceof Date) {
-            const year = formattedFilters.created_date_to.getFullYear()
-            const month = String(formattedFilters.created_date_to.getMonth() + 1).padStart(2, '0')
-            const day = String(formattedFilters.created_date_to.getDate()).padStart(2, '0')
-            formattedFilters.created_date_to = `${year}-${month}-${day}`
+        if (formattedFilters['created-date-to'] instanceof Date) {
+            const year = formattedFilters['created-date-to'].getFullYear()
+            const month = String(formattedFilters['created-date-to'].getMonth() + 1).padStart(2, '0')
+            const day = String(formattedFilters['created-date-to'].getDate()).padStart(2, '0')
+            formattedFilters['created-date-to'] = `${year}-${month}-${day}`
         }
 
         const filtersString = objectToQueryString(formattedFilters)
@@ -127,8 +127,8 @@ export default function Clients() {
 
         const initialFilters: ClientFilters = {
             search: queryParams.search || '',
-            created_date_from: queryParams.created_date_from || null,
-            created_date_to: queryParams.created_date_to || null,
+            'created-date-from': queryParams['created-date-from'] || null,
+            'created-date-to': queryParams['created-date-to'] || null,
         }
 
         setFilters(initialFilters)
@@ -144,7 +144,7 @@ export default function Clients() {
                     <p className="mt-1 text-gray-500 dark:text-gray-400">Manage your clients</p>
                 </section>
 
-                <Card className="overflow-hidden transition-all hover:shadow-md">
+                <Card className="transition-all hover:shadow-md">
                     <CardHeader className="">
                         <div className="flex items-center justify-between">
                             <div>
@@ -153,17 +153,17 @@ export default function Clients() {
                                     {loading ? 'Loading clients...' : error ? 'Failed to load clients' : `You have ${clients.length} clients`}
                                 </CardDescription>
 
-                                {(filters.search || filters.created_date_from || filters.created_date_to) && (
+                                {(filters.search || filters['created-date-from'] || filters['created-date-to']) && (
                                     <CardDescription className="mt-1">
                                         {(() => {
                                             let description = ''
 
-                                            if (filters.created_date_from && filters.created_date_to) {
-                                                description = `Showing clients from ${formatDateValue(filters.created_date_from)} to ${formatDateValue(filters.created_date_to)}`
-                                            } else if (filters.created_date_from) {
-                                                description = `Showing clients from ${formatDateValue(filters.created_date_from)}`
-                                            } else if (filters.created_date_to) {
-                                                description = `Showing clients until ${formatDateValue(filters.created_date_to)}`
+                                            if (filters['created-date-from'] && filters['created-date-to']) {
+                                                description = `Showing clients from ${formatDateValue(filters['created-date-from'])} to ${formatDateValue(filters['created-date-to'])}`
+                                            } else if (filters['created-date-from']) {
+                                                description = `Showing clients from ${formatDateValue(filters['created-date-from'])}`
+                                            } else if (filters['created-date-to']) {
+                                                description = `Showing clients until ${formatDateValue(filters['created-date-to'])}`
                                             }
 
                                             if (filters.search) {
@@ -183,8 +183,8 @@ export default function Clients() {
                                 <ExportButton
                                     href={`${route('client.export')}?${objectToQueryString({
                                         search: filters.search || '',
-                                        created_date_from: formatDateValue(filters.created_date_from),
-                                        created_date_to: formatDateValue(filters.created_date_to),
+                                        'created-date-from': formatDateValue(filters['created-date-from']),
+                                        'created-date-to': formatDateValue(filters['created-date-to']),
                                     })}`}
                                     label="Export"
                                 />
@@ -222,8 +222,8 @@ export default function Clients() {
                                         Created Date From
                                     </Label>
                                     <DatePicker
-                                        selected={parseDate(filters.created_date_from)}
-                                        onChange={(date) => handleFilterChange('created_date_from', date)}
+                                        selected={parseDate(filters['created-date-from'])}
+                                        onChange={(date) => handleFilterChange('created-date-from', date)}
                                         dateFormat="yyyy-MM-dd"
                                         isClearable
                                         disabled={processing}
@@ -243,8 +243,8 @@ export default function Clients() {
                                         Created Date To
                                     </Label>
                                     <DatePicker
-                                        selected={parseDate(filters.created_date_to)}
-                                        onChange={(date) => handleFilterChange('created_date_to', date)}
+                                        selected={parseDate(filters['created-date-to'])}
+                                        onChange={(date) => handleFilterChange('created-date-to', date)}
                                         dateFormat="yyyy-MM-dd"
                                         isClearable
                                         disabled={processing}
@@ -267,7 +267,7 @@ export default function Clients() {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        disabled={!filters.search && !filters.created_date_from && !filters.created_date_to}
+                                        disabled={!filters.search && !filters['created-date-from'] && !filters['created-date-to']}
                                         onClick={clearFilters}
                                         className="flex h-9 w-9 items-center justify-center p-0"
                                         title="Clear filters"

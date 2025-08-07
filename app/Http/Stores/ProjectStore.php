@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Stores;
 
-use App\Http\QueryFilters\Project\ClientIdFilter;
+use App\Http\QueryFilters\Project\ClientFilter;
 use App\Http\QueryFilters\Project\CreatedDateFromFilter;
 use App\Http\QueryFilters\Project\CreatedDateToFilter;
 use App\Http\QueryFilters\Project\SearchFilter;
@@ -92,7 +92,7 @@ final class ProjectStore
         return app(Pipeline::class)
             ->send($query)
             ->through([
-                ClientIdFilter::class,
+                ClientFilter::class,
                 TeamMemberFilter::class,
                 CreatedDateFromFilter::class,
                 CreatedDateToFilter::class,

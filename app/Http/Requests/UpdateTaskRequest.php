@@ -31,6 +31,9 @@ final class UpdateTaskRequest extends FormRequest
             'due_date' => ['sometimes', 'nullable', 'date'],
             'assignees' => ['sometimes', 'nullable', 'array'],
             'assignees.*' => ['integer', 'exists:users,id'],
+            'tags' => ['sometimes', 'nullable', 'array'],
+            'tags.*' => ['string', 'max:255'],
+            'github_update' => ['sometimes', 'boolean'],
         ];
     }
 }

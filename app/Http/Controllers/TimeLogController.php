@@ -12,6 +12,7 @@ use App\Http\Stores\ProjectStore;
 use App\Http\Stores\TimeLogStore;
 use App\Imports\TimeLogImport;
 use App\Models\Project;
+use App\Models\Tag;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\TimeLog;
@@ -39,7 +40,7 @@ final class TimeLogController extends Controller
 {
     use ExportableTrait;
 
-    public function __construct(private GitHubAdapter $gitHubAdapter) {}
+    public function __construct(private readonly GitHubAdapter $gitHubAdapter) {}
 
     public function index()
     {
@@ -90,8 +91,11 @@ final class TimeLogController extends Controller
             $closeGitHubIssue = $data['close_github_issue'] ?? false;
             unset($data['mark_task_complete']);
             unset($data['close_github_issue']);
+            unset($data['tags']);
 
             $timeLog = TimeLog::query()->create($data);
+
+            $this->attachTags($request, $timeLog);
 
             if ($isLogCompleted && ! empty($data['task_id'])) {
                 $task = Task::query()->find($data['task_id']);
@@ -190,10 +194,14 @@ final class TimeLogController extends Controller
 
             $markAsComplete = $data['mark_task_complete'] ?? false;
             $closeGitHubIssue = $data['close_github_issue'] ?? false;
+
             unset($data['mark_task_complete']);
             unset($data['close_github_issue']);
+            unset($data['tags']);
 
             $timeLog->update($data);
+
+            $this->attachTags($request, $timeLog);
 
             if ($isLogCompleted && ! empty($data['task_id']) && $markAsComplete) {
                 $task = Task::query()->find($data['task_id']);
@@ -245,6 +253,8 @@ final class TimeLogController extends Controller
                 ],
             ]);
 
+        $timeLog->load('tags');
+
         return Inertia::render('time-log/edit', [
             'timeLog' => [
                 'id' => $timeLog->id,
@@ -254,6 +264,7 @@ final class TimeLogController extends Controller
                 'end_timestamp' => $timeLog->end_timestamp,
                 'duration' => $timeLog->duration,
                 'note' => $timeLog->note,
+                'tags' => $timeLog->tags->pluck('name'),
             ],
             'projects' => $projects,
             'tasks' => $tasks,
@@ -471,6 +482,40 @@ final class TimeLogController extends Controller
         }, $filename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
+    }
+
+    /**
+     * Attach tags to a time log
+     */
+    public function attachTags(Request $request, TimeLog $timeLog): JsonResponse
+    {
+        $tags = $request->input('tags', []);
+        $tagIds = [];
+
+        foreach ($tags as $tagName) {
+            $tag = Tag::query()->firstOrCreate([
+                'name' => $tagName,
+                'user_id' => $request->user()->id,
+            ]);
+
+            $tagIds[] = $tag->id;
+        }
+
+        // Sync the tags with the time log
+        $timeLog->tags()->sync($tagIds);
+
+        return response()->json([
+            'success' => true,
+            'tags' => $timeLog->tags,
+        ]);
+    }
+
+    /**
+     * Get tags for a time log
+     */
+    public function getTags(TimeLog $timeLog): JsonResponse
+    {
+        return response()->json($timeLog->tags);
     }
 
     private function baseQuery()

@@ -7,6 +7,8 @@ namespace App\Http\Controllers;
 use App\Adapters\GitHubAdapter;
 use App\Http\Requests\GitRepoToProjectRequest;
 use App\Models\Project;
+use App\Models\Tag;
+use App\Models\Task;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -168,6 +170,9 @@ final class GitHubRepositoryController extends Controller
                             ],
                         ]);
 
+                        // Update tags based on GitHub issue labels
+                        $this->syncTagsFromGitHubLabels($issue['labels'] ?? [], $project->user_id, $status, $priority, $existingTask, true);
+
                         $updatedCount++;
                     } else {
                         // Create a new task for this issue
@@ -200,6 +205,9 @@ final class GitHubRepositoryController extends Controller
                                 ] : null,
                             ],
                         ]);
+
+                        // Create and attach tags based on GitHub issue labels
+                        $this->syncTagsFromGitHubLabels($issue['labels'] ?? [], $project->user_id, $status, $priority, $task, false);
 
                         $newCount++;
                     }
@@ -388,11 +396,57 @@ final class GitHubRepositoryController extends Controller
                     ],
                 ]);
 
+                // Create and attach tags based on GitHub issue labels
+                $this->syncTagsFromGitHubLabels($issue['labels'] ?? [], $project->user_id, $status, $priority, $task, false);
+
                 Log::info("Created task from GitHub issue #{$issue['number']} for project {$project->name}");
             } catch (Exception $e) {
                 Log::error("Failed to import GitHub issue #{$issue['number']} as task: " . $e->getMessage());
 
                 continue; // Continue with the next issue even if one fails
+            }
+        }
+    }
+
+    /**
+     * Sync tags for a task based on GitHub issue labels.
+     *
+     * @param  array  $labels  GitHub issue labels
+     * @param  int  $userId  User ID for tag ownership
+     * @param  string  $status  Task status (to skip status labels)
+     * @param  string  $priority  Task priority (to skip priority labels)
+     * @param  Task  $task  The task to sync tags with
+     * @param  bool  $sync  Whether to sync (true) or just attach (false)
+     */
+    private function syncTagsFromGitHubLabels(array $labels, int $userId, string $status, string $priority, Task $task, bool $sync = true): void
+    {
+        if ($labels !== []) {
+            $tagIds = [];
+
+            foreach ($labels as $label) {
+                // Skip status and priority labels as they're already mapped
+                if ($label['name'] === $status) {
+                    continue;
+                }
+                if ($label['name'] === $priority) {
+                    continue;
+                }
+                $tag = Tag::query()->firstOrCreate([
+                    'name' => $label['name'],
+                    'user_id' => $userId,
+                ], [
+                    'color' => $label['color'] ? '#' . $label['color'] : Tag::generateRandomColor(),
+                ]);
+
+                $tagIds[] = $tag->getKey();
+            }
+
+            if ($tagIds !== []) {
+                if ($sync) {
+                    $task->tags()->sync($tagIds);
+                } else {
+                    $task->tags()->attach($tagIds);
+                }
             }
         }
     }

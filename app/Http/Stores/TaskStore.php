@@ -10,6 +10,7 @@ use App\Http\QueryFilters\Task\PriorityFilter;
 use App\Http\QueryFilters\Task\ProjectIdFilter;
 use App\Http\QueryFilters\Task\SearchFilter;
 use App\Http\QueryFilters\Task\StatusFilter;
+use App\Http\QueryFilters\Task\TagFilter;
 use App\Models\Project;
 use App\Models\Task;
 use Carbon\Carbon;
@@ -25,7 +26,7 @@ final class TaskStore
             ->whereHas('project', function ($query) use ($userId): void {
                 $query->where('user_id', $userId);
             })
-            ->with(['project', 'assignees', 'meta'])
+            ->with(['project', 'assignees', 'meta', 'tags'])
             ->orderByDesc('created_at');
 
         // Get tasks assigned to the user
@@ -33,7 +34,7 @@ final class TaskStore
             ->whereHas('assignees', function ($query) use ($userId): void {
                 $query->where('users.id', $userId);
             })
-            ->with(['project', 'assignees', 'meta'])
+            ->with(['project', 'assignees', 'meta', 'tags'])
             ->orderByDesc('created_at');
 
         $ownedProjectTasks = self::applyFilterPipeline($ownedProjectTasksQuery)->get();
@@ -91,6 +92,7 @@ final class TaskStore
                 ProjectIdFilter::class,
                 DueDateFromFilter::class,
                 DueDateToFilter::class,
+                TagFilter::class,
                 SearchFilter::class,
             ])
             ->thenReturn();

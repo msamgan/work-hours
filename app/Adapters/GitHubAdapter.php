@@ -172,10 +172,20 @@ final class GitHubAdapter
                 return false;
             }
 
+            // Start with default labels
+            $labels = [$task->priority, $task->status];
+
+            // Add tags if they exist
+            if ($task->tags->isNotEmpty()) {
+                foreach ($task->tags as $tag) {
+                    $labels[] = $tag->name;
+                }
+            }
+
             $payload = [
                 'title' => $task->title,
                 'body' => $task->description ?? '',
-                'labels' => [$task->priority, $task->status],
+                'labels' => $labels,
             ];
 
             if ($task->due_date) {
@@ -237,10 +247,20 @@ final class GitHubAdapter
                 return false;
             }
 
+            // Start with default labels
+            $labels = [$task->priority, $task->status];
+
+            // Add tags if they exist
+            if ($task->tags->isNotEmpty()) {
+                foreach ($task->tags as $tag) {
+                    $labels[] = $tag->name;
+                }
+            }
+
             $payload = [
                 'title' => $task->title,
                 'body' => $task->description ?? '',
-                'labels' => [$task->priority, $task->status],
+                'labels' => $labels,
             ];
 
             // Set issue state based on task status

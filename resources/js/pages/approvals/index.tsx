@@ -37,10 +37,10 @@ type TimeLog = {
 }
 
 type Filters = {
-    start_date: string
-    end_date: string
-    project_id: string
-    user_id: string
+    'start-date': string
+    'end-date': string
+    project: string
+    user: string
 }
 
 type Project = {
@@ -64,10 +64,10 @@ type Props = {
 
 export default function Approvals({ timeLogs, filters, projects, teamMembers, totalDuration }: Props) {
     const { data, setData, get, processing } = useForm<Filters>({
-        start_date: filters.start_date || '',
-        end_date: filters.end_date || '',
-        project_id: filters.project_id || '',
-        user_id: filters.user_id || '',
+        'start-date': filters['start-date'] || '',
+        'end-date': filters['end-date'] || '',
+        project: filters.project || '',
+        user: filters.user || '',
     })
 
     const [selectedLogs, setSelectedLogs] = useState<number[]>([])
@@ -229,22 +229,22 @@ export default function Approvals({ timeLogs, filters, projects, teamMembers, to
         }
     }
 
-    const startDate = data.start_date ? new Date(data.start_date) : null
-    const endDate = data.end_date ? new Date(data.end_date) : null
+    const startDate = data['start-date'] ? new Date(data['start-date']) : null
+    const endDate = data['end-date'] ? new Date(data['end-date']) : null
 
     const handleStartDateChange = (date: Date | null) => {
         if (date) {
-            setData('start_date', date.toISOString().split('T')[0])
+            setData('start-date', date.toISOString().split('T')[0])
         } else {
-            setData('start_date', '')
+            setData('start-date', '')
         }
     }
 
     const handleEndDateChange = (date: Date | null) => {
         if (date) {
-            setData('end_date', date.toISOString().split('T')[0])
+            setData('end-date', date.toISOString().split('T')[0])
         } else {
-            setData('end_date', '')
+            setData('end-date', '')
         }
     }
 
@@ -308,7 +308,7 @@ export default function Approvals({ timeLogs, filters, projects, teamMembers, to
                         <div className="mt-4 border-t pt-4">
                             <form onSubmit={submit} className="flex w-full flex-row flex-wrap gap-4">
                                 <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-1">
-                                    <Label htmlFor="start_date" className="text-xs font-medium">
+                                    <Label htmlFor="start-date" className="text-xs font-medium">
                                         Start Date
                                     </Label>
                                     <DatePicker
@@ -319,7 +319,7 @@ export default function Approvals({ timeLogs, filters, projects, teamMembers, to
                                         disabled={processing}
                                         customInput={
                                             <CustomInput
-                                                id="start_date"
+                                                id="start-date"
                                                 icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
                                                 disabled={processing}
                                                 placeholder="Select start date"
@@ -329,7 +329,7 @@ export default function Approvals({ timeLogs, filters, projects, teamMembers, to
                                 </div>
 
                                 <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-1">
-                                    <Label htmlFor="end_date" className="text-xs font-medium">
+                                    <Label htmlFor="end-date" className="text-xs font-medium">
                                         End Date
                                     </Label>
                                     <DatePicker
@@ -340,7 +340,7 @@ export default function Approvals({ timeLogs, filters, projects, teamMembers, to
                                         disabled={processing}
                                         customInput={
                                             <CustomInput
-                                                id="end_date"
+                                                id="end-date"
                                                 icon={<CalendarRange className="h-4 w-4 text-muted-foreground" />}
                                                 disabled={processing}
                                                 placeholder="Select end date"
@@ -350,13 +350,13 @@ export default function Approvals({ timeLogs, filters, projects, teamMembers, to
                                 </div>
 
                                 <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-1">
-                                    <Label htmlFor="project_id" className="text-xs font-medium">
+                                    <Label htmlFor="project" className="text-xs font-medium">
                                         Project
                                     </Label>
                                     <SearchableSelect
-                                        id="project_id"
-                                        value={data.project_id}
-                                        onChange={(value) => setData('project_id', value)}
+                                        id="project"
+                                        value={data.project}
+                                        onChange={(value) => setData('project', value)}
                                         options={[{ id: '', name: 'All Projects' }, ...projects]}
                                         placeholder="Select project"
                                         disabled={processing}
@@ -365,13 +365,13 @@ export default function Approvals({ timeLogs, filters, projects, teamMembers, to
                                 </div>
 
                                 <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-1">
-                                    <Label htmlFor="user_id" className="text-xs font-medium">
+                                    <Label htmlFor="user" className="text-xs font-medium">
                                         Team Member
                                     </Label>
                                     <SearchableSelect
-                                        id="user_id"
-                                        value={data.user_id}
-                                        onChange={(value) => setData('user_id', value)}
+                                        id="user"
+                                        value={data.user}
+                                        onChange={(value) => setData('user', value)}
                                         options={[{ id: '', name: 'All Members' }, ...teamMembers]}
                                         placeholder="Select member"
                                         disabled={processing}
@@ -389,13 +389,13 @@ export default function Approvals({ timeLogs, filters, projects, teamMembers, to
                                         type="button"
                                         variant="outline"
                                         size="icon"
-                                        disabled={processing || (!data.start_date && !data.end_date && !data.project_id && !data.user_id)}
+                                        disabled={processing || (!data['start-date'] && !data['end-date'] && !data.project && !data.user)}
                                         onClick={() => {
                                             setData({
-                                                start_date: '',
-                                                end_date: '',
-                                                project_id: '',
-                                                user_id: '',
+                                                'start-date': '',
+                                                'end-date': '',
+                                                project: '',
+                                                user: '',
                                             })
                                             get(route('approvals.index'), {
                                                 preserveState: true,
@@ -411,21 +411,21 @@ export default function Approvals({ timeLogs, filters, projects, teamMembers, to
                             </form>
 
                             <div className="mt-4 text-sm text-muted-foreground">
-                                {(data.start_date || data.end_date || data.project_id || data.user_id) && (
+                                {(data['start-date'] || data['end-date'] || data.project || data.user) && (
                                     <CardDescription>
                                         {(() => {
                                             let description = ''
 
-                                            if (data.start_date && data.end_date) {
-                                                description = `Showing logs from ${data.start_date} to ${data.end_date}`
-                                            } else if (data.start_date) {
-                                                description = `Showing logs from ${data.start_date}`
-                                            } else if (data.end_date) {
-                                                description = `Showing logs until ${data.end_date}`
+                                            if (data['start-date'] && data['end-date']) {
+                                                description = `Showing logs from ${data['start-date']} to ${data['end-date']}`
+                                            } else if (data['start-date']) {
+                                                description = `Showing logs from ${data['start-date']}`
+                                            } else if (data['end-date']) {
+                                                description = `Showing logs until ${data['end-date']}`
                                             }
 
-                                            if (data.project_id) {
-                                                const selectedProject = projects.find((project) => project.id.toString() === data.project_id)
+                                            if (data.project) {
+                                                const selectedProject = projects.find((project) => project.id.toString() === data.project)
                                                 const projectName = selectedProject ? selectedProject.name : ''
 
                                                 if (description) {
@@ -435,8 +435,8 @@ export default function Approvals({ timeLogs, filters, projects, teamMembers, to
                                                 }
                                             }
 
-                                            if (data.user_id) {
-                                                const selectedMember = teamMembers.find((member) => member.id.toString() === data.user_id)
+                                            if (data.user) {
+                                                const selectedMember = teamMembers.find((member) => member.id.toString() === data.user)
                                                 const memberName = selectedMember ? selectedMember.name : ''
 
                                                 if (description) {

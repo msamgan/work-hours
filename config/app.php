@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -125,4 +124,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin User IDs
+    |--------------------------------------------------------------------------
+    |
+    | This array contains the user IDs of administrators who have access to
+    | the admin dashboard. The values are retrieved from the ADMIN_IDS
+    | environment variable, which contains a comma-separated list of user IDs.
+    |
+    */
+
+    'admin_ids' => array_map('intval', explode(',', (string) env('ADMIN_IDS', ''))),
 ];

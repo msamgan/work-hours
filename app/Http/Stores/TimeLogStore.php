@@ -10,9 +10,11 @@ use App\Http\QueryFilters\TimeLog\IsPaidFilter;
 use App\Http\QueryFilters\TimeLog\ProjectIdFilter;
 use App\Http\QueryFilters\TimeLog\StartDateFilter;
 use App\Http\QueryFilters\TimeLog\StatusFilter;
+use App\Http\QueryFilters\TimeLog\TagFilter;
 use App\Http\QueryFilters\TimeLog\UserIdFilter;
 use App\Models\Client;
 use App\Models\Project;
+use App\Models\Tag;
 use App\Models\Team;
 use App\Models\TimeLog;
 use App\Models\User;
@@ -45,9 +47,10 @@ final class TimeLogStore
                 IsPaidFilter::class,
                 ProjectIdFilter::class,
                 StatusFilter::class,
+                TagFilter::class,
             ])
             ->thenReturn()
-            ->with(['user', 'project', 'task'])
+            ->with(['user', 'project', 'task', 'tags'])
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -173,7 +176,7 @@ final class TimeLogStore
             $groupedTimeLogs[$projectId]['total_hours'] += $timeLog->duration;
         }
 
-        // Convert to indexed array
+        // Convert to an indexed array
         return array_values($groupedTimeLogs);
     }
 
@@ -224,6 +227,7 @@ final class TimeLogStore
     public static function resData(\Illuminate\Support\Collection $timeLogs): array
     {
         $timeLogStats = self::stats($timeLogs);
+        $tags = Tag::query()->where('user_id', auth()->id())->get(['id', 'name']);
 
         return [
             'timeLogs' => self::timeLogMapper($timeLogs),
@@ -235,6 +239,7 @@ final class TimeLogStore
             'weeklyAverage' => $timeLogStats['weekly_average'],
             'unpaidAmountsByCurrency' => $timeLogStats['unpaid_amounts_by_currency'],
             'paidAmountsByCurrency' => $timeLogStats['paid_amounts_by_currency'],
+            'tags' => $tags,
         ];
     }
 
@@ -340,6 +345,11 @@ final class TimeLogStore
                 'approver_name' => $approverName,
                 'comment' => $timeLog->comment,
                 'user_non_monetary' => $isNonMonetary,
+                'tags' => $timeLog->tags ? $timeLog->tags->map(fn ($tag): array => [
+                    'id' => $tag->id,
+                    'name' => $tag->name,
+                    'color' => $tag->color ?? '#032C95', // Default to blue if no color is set
+                ]) : [],
             ];
         });
     }
@@ -395,11 +405,12 @@ final class TimeLogStore
     public static function filters(): array
     {
         return [
-            'start_date' => request('start_date', ''),
-            'end_date' => request('end_date', ''),
-            'project_id' => request('project_id', ''),
-            'is_paid' => request('is_paid', ''),
+            'start-date' => request('start-date', ''),
+            'end-date' => request('end-date', ''),
+            'project' => request('project', ''),
+            'is-paid' => request('is-paid', ''),
             'status' => request('status', ''),
+            'tag' => request('tag', ''),
         ];
     }
 }

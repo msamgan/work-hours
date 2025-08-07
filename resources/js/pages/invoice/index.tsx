@@ -60,10 +60,10 @@ type Invoice = {
 
 type InvoiceFilters = {
     search: string
-    client_id: string
+    client: string
     status: string
-    created_date_from: string | Date | null
-    created_date_to: string | Date | null
+    'created-date-from': string | Date | null
+    'created-date-to': string | Date | null
 }
 
 type Props = {
@@ -89,10 +89,10 @@ export default function Invoices() {
     // Filter states
     const [filters, setFilters] = useState<InvoiceFilters>({
         search: pageFilters?.search || '',
-        client_id: pageFilters?.client_id || 'all',
+        client: pageFilters?.client || 'all',
         status: pageFilters?.status || 'all',
-        created_date_from: pageFilters?.created_date_from || null,
-        created_date_to: pageFilters?.created_date_to || null,
+        'created-date-from': pageFilters?.['created-date-from'] || null,
+        'created-date-to': pageFilters?.['created-date-to'] || null,
     })
 
     const handleFilterChange = (key: keyof InvoiceFilters, value: string | Date | null): void => {
@@ -102,10 +102,10 @@ export default function Invoices() {
     const clearFilters = (): void => {
         setFilters({
             search: '',
-            client_id: 'all',
+            client: 'all',
             status: 'all',
-            created_date_from: null,
-            created_date_to: null,
+            'created-date-from': null,
+            'created-date-to': null,
         })
     }
 
@@ -119,8 +119,8 @@ export default function Invoices() {
 
             // Convert "all" values to empty strings for API
             if (apiFilters) {
-                if (apiFilters.client_id === 'all') {
-                    apiFilters.client_id = ''
+                if (apiFilters.client === 'all') {
+                    apiFilters.client = ''
                 }
 
                 if (apiFilters.status === 'all') {
@@ -156,26 +156,26 @@ export default function Invoices() {
         const formattedFilters = { ...filters }
 
         // Convert "all" values to empty strings for API
-        if (formattedFilters.client_id === 'all') {
-            formattedFilters.client_id = ''
+        if (formattedFilters.client === 'all') {
+            formattedFilters.client = ''
         }
 
         if (formattedFilters.status === 'all') {
             formattedFilters.status = ''
         }
 
-        if (formattedFilters.created_date_from instanceof Date) {
-            const year = formattedFilters.created_date_from.getFullYear()
-            const month = String(formattedFilters.created_date_from.getMonth() + 1).padStart(2, '0')
-            const day = String(formattedFilters.created_date_from.getDate()).padStart(2, '0')
-            formattedFilters.created_date_from = `${year}-${month}-${day}`
+        if (formattedFilters['created-date-from'] instanceof Date) {
+            const year = formattedFilters['created-date-from'].getFullYear()
+            const month = String(formattedFilters['created-date-from'].getMonth() + 1).padStart(2, '0')
+            const day = String(formattedFilters['created-date-from'].getDate()).padStart(2, '0')
+            formattedFilters['created-date-from'] = `${year}-${month}-${day}`
         }
 
-        if (formattedFilters.created_date_to instanceof Date) {
-            const year = formattedFilters.created_date_to.getFullYear()
-            const month = String(formattedFilters.created_date_to.getMonth() + 1).padStart(2, '0')
-            const day = String(formattedFilters.created_date_to.getDate()).padStart(2, '0')
-            formattedFilters.created_date_to = `${year}-${month}-${day}`
+        if (formattedFilters['created-date-to'] instanceof Date) {
+            const year = formattedFilters['created-date-to'].getFullYear()
+            const month = String(formattedFilters['created-date-to'].getMonth() + 1).padStart(2, '0')
+            const day = String(formattedFilters['created-date-to'].getDate()).padStart(2, '0')
+            formattedFilters['created-date-to'] = `${year}-${month}-${day}`
         }
 
         const filtersString = objectToQueryString(formattedFilters)
@@ -190,10 +190,10 @@ export default function Invoices() {
 
         const initialFilters: InvoiceFilters = {
             search: queryParams.search || '',
-            client_id: queryParams.client_id || 'all',
+            client: queryParams.client || 'all',
             status: queryParams.status || 'all',
-            created_date_from: queryParams.created_date_from || null,
-            created_date_to: queryParams.created_date_to || null,
+            'created-date-from': queryParams['created-date-from'] || null,
+            'created-date-to': queryParams['created-date-to'] || null,
         }
 
         setFilters(initialFilters)
@@ -339,10 +339,10 @@ export default function Invoices() {
                                 <ExportButton
                                     href={`${route('invoice.export')}?${objectToQueryString({
                                         search: filters.search || '',
-                                        client_id: filters.client_id || '',
+                                        client: filters.client || '',
                                         status: filters.status || '',
-                                        created_date_from: formatDateValue(filters.created_date_from),
-                                        created_date_to: formatDateValue(filters.created_date_to),
+                                        'created-date-from': formatDateValue(filters['created-date-from']),
+                                        'created-date-to': formatDateValue(filters['created-date-to']),
                                     })}`}
                                     label="Export"
                                 />
@@ -380,7 +380,7 @@ export default function Invoices() {
                                     <Label htmlFor="client_id" className="text-xs font-medium">
                                         Client
                                     </Label>
-                                    <Select value={filters.client_id} onValueChange={(value) => handleFilterChange('client_id', value)}>
+                                    <Select value={filters.client} onValueChange={(value) => handleFilterChange('client', value)}>
                                         <SelectTrigger id="client_id">
                                             <SelectValue placeholder="All Clients" />
                                         </SelectTrigger>
@@ -422,8 +422,8 @@ export default function Invoices() {
                                         Date From
                                     </Label>
                                     <DatePicker
-                                        selected={parseDate(filters.created_date_from)}
-                                        onChange={(date) => handleFilterChange('created_date_from', date)}
+                                        selected={parseDate(filters['created-date-from'])}
+                                        onChange={(date) => handleFilterChange('created-date-from', date)}
                                         dateFormat="yyyy-MM-dd"
                                         isClearable
                                         disabled={processing}
@@ -444,8 +444,8 @@ export default function Invoices() {
                                         Date To
                                     </Label>
                                     <DatePicker
-                                        selected={parseDate(filters.created_date_to)}
-                                        onChange={(date) => handleFilterChange('created_date_to', date)}
+                                        selected={parseDate(filters['created-date-to'])}
+                                        onChange={(date) => handleFilterChange('created-date-to', date)}
                                         dateFormat="yyyy-MM-dd"
                                         isClearable
                                         disabled={processing}
@@ -473,10 +473,10 @@ export default function Invoices() {
                                         size="icon"
                                         disabled={
                                             !filters.search &&
-                                            filters.client_id === 'all' &&
+                                            filters.client === 'all' &&
                                             filters.status === 'all' &&
-                                            !filters.created_date_from &&
-                                            !filters.created_date_to
+                                            !filters['created-date-from'] &&
+                                            !filters['created-date-to']
                                         }
                                         onClick={clearFilters}
                                         className="h-9 w-9"
@@ -490,20 +490,22 @@ export default function Invoices() {
 
                             <div className={'mt-4 text-sm text-muted-foreground'}>
                                 {(filters.search ||
-                                    filters.client_id !== 'all' ||
+                                    filters.client !== 'all' ||
                                     filters.status !== 'all' ||
-                                    filters.created_date_from ||
-                                    filters.created_date_to) && (
+                                    filters['created-date-from'] ||
+                                    filters['created-date-to']) && (
                                     <CardDescription>
                                         {(() => {
                                             let description = ''
 
-                                            if (filters.created_date_from && filters.created_date_to) {
-                                                description = `Showing invoices from ${formatDateValue(filters.created_date_from)} to ${formatDateValue(filters.created_date_to)}`
-                                            } else if (filters.created_date_from) {
-                                                description = `Showing invoices from ${formatDateValue(filters.created_date_from)}`
-                                            } else if (filters.created_date_to) {
-                                                description = `Showing invoices until ${formatDateValue(filters.created_date_to)}`
+                                            if (filters['created-date-from'] && filters['created-date-to']) {
+                                                description = `Showing invoices from ${formatDateValue(filters['created-date-from'])} to ${formatDateValue(
+                                                    filters['created-date-to'],
+                                                )}`
+                                            } else if (filters['created-date-from']) {
+                                                description = `Showing invoices from ${formatDateValue(filters['created-date-from'])}`
+                                            } else if (filters['created-date-to']) {
+                                                description = `Showing invoices until ${formatDateValue(filters['created-date-to'])}`
                                             }
 
                                             if (filters.status) {
@@ -514,7 +516,7 @@ export default function Invoices() {
                                                 }
                                             }
 
-                                            if (filters.client_id) {
+                                            if (filters.client) {
                                                 if (description) {
                                                     description += ` for selected client`
                                                 } else {

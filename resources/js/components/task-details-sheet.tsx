@@ -14,6 +14,12 @@ type Project = {
     user_id: number
 }
 
+type Tag = {
+    id: number
+    name: string
+    color: string
+}
+
 type Task = {
     id: number
     project_id: number
@@ -24,6 +30,7 @@ type Task = {
     due_date: string | null
     project: Project
     assignees: User[]
+    tags?: Tag[]
     created_at?: string
 }
 
@@ -164,6 +171,24 @@ export default function TaskDetailsSheet({ task, open, onOpenChange }: TaskDetai
                                             </span>
                                             <span className="text-sm">{assignee.name}</span>
                                         </span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Tags */}
+                    {task.tags && task.tags.length > 0 && (
+                        <div className="space-y-2">
+                            <h3 className="ml-4 flex items-center gap-2 text-lg font-semibold text-primary">
+                                <Info className="h-5 w-5 text-primary" /> Tags
+                            </h3>
+                            <div className="grid grid-cols-1 gap-4 rounded-lg border bg-muted/40 p-4">
+                                <div className="flex flex-wrap gap-2">
+                                    {task.tags.map((tag) => (
+                                        <Badge key={tag.id} style={{ backgroundColor: tag.color, color: '#fff' }}>
+                                            {tag.name}
+                                        </Badge>
                                     ))}
                                 </div>
                             </div>

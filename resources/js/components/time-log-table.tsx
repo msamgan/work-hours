@@ -1,6 +1,7 @@
 import { ActionButton, ActionButtonGroup } from '@/components/action-buttons'
 import DeleteTimeLog from '@/components/delete-time-log'
 import TimeLogDetailsSheet from '@/components/time-log-details-sheet'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableHeaderRow, TableRow } from '@/components/ui/table'
 import { formatTimeEntry } from '@/lib/utils'
@@ -30,6 +31,7 @@ export type TimeLogEntry = {
     task_priority?: string
     task_due_date?: string | null
     task_description?: string | null
+    tags?: Array<{ id: number; name: string; color: string }>
 }
 
 type TimeLogTableProps = {
@@ -107,7 +109,18 @@ export default function TimeLogTable({
                             <TableCell className="font-medium">
                                 {formatTimeEntry(log.start_timestamp, log.end_timestamp)}
                                 <br />
-                                {showProject && <small>{log.project_name || 'No Project'}</small>}
+                                <div className="flex flex-wrap items-center gap-1">
+                                    {showProject && <small className="mr-1">{log.project_name || 'No Project'}</small>}
+                                    {log.tags && log.tags.length > 0 && (
+                                        <div className="flex flex-wrap gap-1">
+                                            {log.tags.map((tag) => (
+                                                <Badge key={tag.id} className="text-xs" style={{ backgroundColor: tag.color, color: '#fff' }}>
+                                                    {tag.name}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </TableCell>
                             <TableCell>
                                 <span className="inline-flex items-center bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">

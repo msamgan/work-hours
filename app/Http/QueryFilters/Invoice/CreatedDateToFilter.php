@@ -16,8 +16,9 @@ final class CreatedDateToFilter
      */
     public function handle($builder, Closure $next)
     {
-        if (request()->has('created_date_to') && request('created_date_to') !== '' && request('created_date_to') !== 'null' && request('created_date_to') !== null) {
-            $dateTo = request('created_date_to');
+
+        if (request()->has('created-date-to') && request('created-date-to') !== '' && request('created-date-to') !== 'null' && request('created-date-to') !== null) {
+            $dateTo = request('created-date-to');
             $builder->whereDate('created_at', '<=', $dateTo);
         }
 

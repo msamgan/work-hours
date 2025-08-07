@@ -16,9 +16,9 @@ final class TeamMemberFilter
      */
     public function handle($builder, Closure $next)
     {
-        if (request()->has('team_member_id') && request('team_member_id') !== '') {
+        if (request()->has('team-member') && request('team-member') !== '') {
             $builder->whereHas('teamMembers', function ($query): void {
-                $query->where('users.id', request('team_member_id'));
+                $query->where('users.id', request('team-member'));
             });
         }
 

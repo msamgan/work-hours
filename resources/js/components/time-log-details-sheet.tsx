@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { formatTimeEntry } from '@/lib/utils'
 import { Info } from 'lucide-react'
@@ -46,6 +47,24 @@ export default function TimeLogDetailsSheet({ timeLog, open, onOpenChange }: Tim
                             </div>
                         </div>
                     </div>
+
+                    {/* Tags Information - Only shown if tags exist */}
+                    {timeLog.tags && timeLog.tags.length > 0 && (
+                        <div className="space-y-2">
+                            <h3 className="ml-4 flex items-center gap-2 text-lg font-semibold text-primary">
+                                <Info className="h-5 w-5 text-primary" /> Tags
+                            </h3>
+                            <div className="grid grid-cols-1 gap-4 rounded-lg border bg-muted/40 p-4">
+                                <div className="flex flex-wrap gap-2">
+                                    {timeLog.tags.map((tag) => (
+                                        <Badge key={tag.id} style={{ backgroundColor: tag.color, color: '#fff' }}>
+                                            {tag.name}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Task Information */}
                     {timeLog.task_title && (

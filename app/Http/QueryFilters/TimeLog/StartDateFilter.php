@@ -18,8 +18,8 @@ final class StartDateFilter
     {
         $builder = $next($request);
 
-        if (request()->get('start_date')) {
-            $builder->whereDate('start_timestamp', '>=', request('start_date'));
+        if (request()->get('start-date')) {
+            $builder->whereDate('start_timestamp', '>=', request('start-date'));
         }
 
         return $builder;

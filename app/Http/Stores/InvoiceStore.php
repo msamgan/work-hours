@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Stores;
 
 use App\Enums\InvoiceStatus;
-use App\Http\QueryFilters\Invoice\ClientIdFilter;
+use App\Http\QueryFilters\Invoice\ClientFilter;
 use App\Http\QueryFilters\Invoice\CreatedDateFromFilter;
 use App\Http\QueryFilters\Invoice\CreatedDateToFilter;
 use App\Http\QueryFilters\Invoice\SearchFilter;
@@ -182,7 +182,7 @@ final class InvoiceStore
             ->send($query)
             ->through([
                 SearchFilter::class,
-                ClientIdFilter::class,
+                ClientFilter::class,
                 StatusFilter::class,
                 CreatedDateFromFilter::class,
                 CreatedDateToFilter::class,

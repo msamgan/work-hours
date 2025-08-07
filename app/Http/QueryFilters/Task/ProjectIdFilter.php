@@ -16,8 +16,8 @@ final class ProjectIdFilter
      */
     public function handle($builder, Closure $next)
     {
-        if (request()->has('project_id') && request('project_id') !== 'all') {
-            $builder->where('project_id', request('project_id'));
+        if (request()->has('project') && request('project') !== 'all') {
+            $builder->where('project_id', request('project'));
         }
 
         return $next($builder);

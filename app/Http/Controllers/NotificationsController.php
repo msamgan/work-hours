@@ -30,6 +30,9 @@ final class NotificationsController extends Controller
     {
         $user = auth()->user();
 
+        // Check if the user is an admin using the model method
+        $isAdmin = $user->isAdmin();
+
         return [
             'notifications' => $user->notifications()->paginate(10)->through(fn ($notification): array => [
                 'id' => $notification->id,
@@ -39,6 +42,9 @@ final class NotificationsController extends Controller
                 'created_at' => $notification->created_at->diffForHumans(),
             ]),
             'unread_count' => $user->unreadNotifications()->count(),
+            'user' => [
+                'is_admin' => $isAdmin,
+            ],
         ];
     }
 

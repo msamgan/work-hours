@@ -18,8 +18,8 @@ final class TeamMemberIdFilter
     {
         $builder = $next($request);
 
-        if (request()->get('team_member_id') && request('team_member_id')) {
-            $builder->where('user_id', request('team_member_id'));
+        if (request()->get('team-member') && request('team-member')) {
+            $builder->where('user_id', request('team-member'));
         }
 
         return $builder;

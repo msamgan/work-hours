@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Project $project
  * @property Collection|User[] $assignees
  * @property TaskMeta|null $meta
+ * @property Collection|Tag[] $tags
  */
 final class Task extends Model
 {
@@ -57,6 +58,14 @@ final class Task extends Model
     public function meta(): HasOne
     {
         return $this->hasOne(TaskMeta::class);
+    }
+
+    /**
+     * Get the tags associated with this task.
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
     }
 
     protected function casts(): array
