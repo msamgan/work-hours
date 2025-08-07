@@ -37,12 +37,12 @@ final class TaskController extends Controller
         /**
          * GitHub adapter for handling GitHub-related operations
          */
-        private GitHubAdapter $gitHubAdapter,
+        private readonly GitHubAdapter $gitHubAdapter,
 
         /**
          * Trello adapter for handling Trello-related operations
          */
-        private TrelloAdapter $trelloAdapter,
+        private readonly TrelloAdapter $trelloAdapter,
     ) {}
 
     /**

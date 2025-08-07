@@ -38,6 +38,12 @@ export type Task = {
         source_number?: string
         source_id?: string
         source_state?: string
+        list_name?: string
+        extra_data?: {
+            list_name?: string
+            list_id?: string
+            [key: string]: never
+        }
     }
 }
 

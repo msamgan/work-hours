@@ -627,7 +627,12 @@ export default function Tasks() {
                                                     {task.is_imported && task.meta?.source === 'trello' && <Trello className="h-3 w-3 text-blue-600 dark:text-blue-400" />}
                                                 </div>
                                                 <div className="flex flex-wrap items-center gap-2">
-                                                    <small>{task.project.name}</small>
+                                                    <small>
+                                                        {task.is_imported && task.meta?.source === 'trello' && task.meta?.extra_data?.list_name && (
+                                                            <span className="mr-1 text-blue-600 dark:text-blue-400">{task.meta.extra_data.list_name} / </span>
+                                                        )}
+                                                        {task.project.name}
+                                                    </small>
                                                     {task.tags && task.tags.length > 0 && (
                                                         <div className="mt-1 flex flex-wrap gap-1">
                                                             {task.tags.map((tag) => (
