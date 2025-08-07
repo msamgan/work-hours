@@ -20,6 +20,22 @@ export type Tag = {
     color: string
 }
 
+export type TaskMeta = {
+    id?: number
+    task_id: number
+    source?: string
+    source_url?: string
+    source_number?: string
+    source_id?: string
+    source_state?: string
+    list_name?: string
+    extra_data?: {
+        list_name?: string
+        list_id?: string
+        [key: string]: any
+    }
+}
+
 export type Task = {
     id: number
     project_id: number
@@ -32,19 +48,7 @@ export type Task = {
     project: Project
     assignees: User[]
     tags?: Tag[]
-    meta?: {
-        source?: string
-        source_url?: string
-        source_number?: string
-        source_id?: string
-        source_state?: string
-        list_name?: string
-        extra_data?: {
-            list_name?: string
-            list_id?: string
-            [key: string]: never
-        }
-    }
+    meta?: TaskMeta
 }
 
 /**
