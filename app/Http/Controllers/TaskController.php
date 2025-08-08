@@ -127,13 +127,6 @@ final class TaskController extends Controller
 
                 // Load the project relationship for the notification
                 $task->load('project');
-
-                // Send notification to all assignees
-                $assigneeIds = $request->input('assignees');
-                $users = User::query()->whereIn('id', $assigneeIds)->get();
-                foreach ($users as $user) {
-                    $user->notify(new TaskAssigned($task, auth()->user()));
-                }
             }
 
             // Attach tags if provided
@@ -142,6 +135,13 @@ final class TaskController extends Controller
             }
 
             DB::commit();
+
+            // Send notification to all assignees
+            $assigneeIds = $request->input('assignees');
+            $users = User::query()->whereIn('id', $assigneeIds)->get();
+            foreach ($users as $user) {
+                $user->notify(new TaskAssigned($task, auth()->user()));
+            }
 
             // Check if we need to create a GitHub issue for this task
             if ($request->boolean('create_github_issue')) {
